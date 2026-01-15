@@ -65,7 +65,7 @@ This creates a self-referential feedback loop where:
 - The agent autonomously improves by reading its own past work in files.
 
 ### ⚠️ Warning
-**This loop will continue until the task is complete, the `max-iterations` (default: 3) is reached, the `max-time` (default: 60m) expires, or a `completion-promise` is fulfilled.** (Note: Individual workers have a 20m timeout).
+**This loop will continue until the task is complete, the `max-iterations` (default: 5) is reached, the `max-time` (default: 60m) expires, or a `completion-promise` is fulfilled.** (Note: Individual workers have a 20m timeout).
 
 ## ✅ When to Use Pickle Rick
 
@@ -90,7 +90,7 @@ To initiate the iterative development loop:
 ```
 
 **Options:**
-- `--max-iterations <N>`: Stop after N iterations (default: 3). **(Currently non-functional)**
+- `--max-iterations <N>`: Stop after N iterations (default: 5). **(Currently non-functional)**
 - `--max-time <M>`: Stop after M minutes (default: 60). (Worker timeout default: 20m). **(Currently non-functional)**
 - `--worker-timeout <S>`: Timeout for individual workers in seconds (default: 1200).
 - `--name <SLUG>`: Custom name for the session directory.

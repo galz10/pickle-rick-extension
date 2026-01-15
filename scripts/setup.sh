@@ -156,7 +156,7 @@ else
   [[ -n "$TASK_STR" ]] || die "No task specified. Run /pickle --help for usage."
 
   # Apply Defaults if not set
-  [[ -z "$LOOP_LIMIT" ]] && LOOP_LIMIT=3
+  [[ -z "$LOOP_LIMIT" ]] && LOOP_LIMIT=5
   [[ -z "$TIME_LIMIT" ]] && TIME_LIMIT=60
   CURRENT_ITERATION=1
 
