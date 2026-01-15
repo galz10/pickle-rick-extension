@@ -144,12 +144,22 @@ To ensure Pickle Rick functions correctly, you must:
 
 2.  **Include Directories**: To ensure Pickle Rick can track its thoughts, manage Linear tickets, and persist session state, you **must** add the extension's data directory to your Gemini `includeDirectories` configuration (usually in your `.gemini/settings.json`).
 
-Add the following path:
-```bash
-~/.gemini/extensions/pickle-rick
+Add the following to your configuration:
+```json
+{
+  "context": {
+    "includeDirectories": ["~/.gemini/extensions/pickle-rick"]
+  }
+}
 ```
 
 This allows the agent to read and write to the `sessions/` directory where all PRDs, tickets, research, and plans are stored. Without this, the agent will be "blind" to its own progress between iterations.
+
+### 🔍 Viewing Session Logs
+If you want to monitor the agent's progress or review past work, you can find all session data (including research, plans, and tickets) in:
+```bash
+~/.gemini/extensions/pickle-rick/sessions
+```
 
 ## 🧠 Skills & Capabilities
 
@@ -204,8 +214,10 @@ The extension is configured via `gemini-extension.json`.
 
 **Pickle Rick executes code.** It is highly recommended to run this extension in a **sandboxed environment** (Docker container, VM, or a dedicated restricted shell) to prevent accidental system modifications.
 
+If you are running in a sandbox, enable **YOLO mode** (`-y`) so you are not prompted for every tool execution.
+
 ```bash
-gemini -s
+gemini -s -y
 ```
 
 ### Recommended Tool Restrictions

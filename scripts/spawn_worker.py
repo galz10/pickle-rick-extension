@@ -143,7 +143,7 @@ def main():
         icon="🥒",
     )
 
-    cmd = ["gemini", "-s", "-y", "-d"]
+    cmd = ["gemini", "-s", "-y"]
 
     if args.output_format != "text":
         cmd.extend(["-o", args.output_format])

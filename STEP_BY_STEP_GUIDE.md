@@ -13,7 +13,9 @@ Add this to your `~/.gemini/settings.json` to enable the agent and secure git op
 {
   "hooks": { "enabled": true },
   "experimental": { "skills": true },
-  "includeDirectories": ["~/.gemini/extensions/pickle-rick"],
+  "context": {
+    "includeDirectories": ["~/.gemini/extensions/pickle-rick"]
+  },
   "tools": {
     "exclude": ["run_shell_command(git push)"],
     "allowed": [
@@ -27,9 +29,9 @@ Add this to your `~/.gemini/settings.json` to enable the agent and secure git op
 ```
 
 **Step 3: Launch Safely**
-Always run in sandbox mode for safety:
+Always run in sandbox mode for safety. Enabling **YOLO mode** (`-y`) prevents constant prompts for tool execution:
 ```bash
-gemini -s
+gemini -s -y
 ```
 
 ---
