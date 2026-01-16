@@ -1,4 +1,4 @@
-# Pickle Rick Extension 🥒
+# Pickle Rick for Gemini CLI 🥒
 
 ## 📥 Installation
 
