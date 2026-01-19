@@ -6,4 +6,9 @@ Run the cancel script to deactivate the stop hook and clean up state:
 ```bash
 bash "${extensionPath}/scripts/cancel.sh"
 ```
+
+**Windows (PowerShell):**
+```powershell
+pwsh -File "${extensionPath}/scripts/cancel.ps1"
+```
 """

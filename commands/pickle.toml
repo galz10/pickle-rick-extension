@@ -20,6 +20,10 @@ Run the setup script to initialize the loop state:
 ```bash
 bash "${extensionPath}/scripts/setup.sh" $ARGUMENTS
 ```
+**Windows (PowerShell):**
+```powershell
+pwsh -File "${extensionPath}/scripts/setup.ps1" $ARGUMENTS
+```
 **Supported Arguments for setup.sh:**
 - `--max-iterations <N>`: Maximum number of loop iterations.
 - `--max-time <MINUTES>`: Maximum duration in minutes.
@@ -50,6 +54,7 @@ Between each step, you **MUST** explicitly state what you are doing (e.g., "Movi
     *   **Action**: Pick the highest priority ticket that is NOT 'Done'.
     *   **Delegation**: Spawn a Worker (Morty) to handle the entire implementation lifecycle for this ticket.
     *   **Command**: `python3 "${extensionPath}/scripts/spawn_worker.py" --ticket-id <ID> --ticket-path <PATH> --timeout <worker_timeout_seconds> "<TASK_DESCRIPTION>"`
+    *   **Command (Windows)**: `python "${extensionPath}/scripts/spawn_worker.py" --ticket-id <ID> --ticket-path <PATH> --timeout <worker_timeout_seconds> "<TASK_DESCRIPTION>"`
     *   **Validation**: IGNORE worker logs. DIRECTLY verify:
         1. `git status` (Check for file changes)
         2. `git diff` (Check code quality)

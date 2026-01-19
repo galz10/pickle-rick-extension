@@ -7,13 +7,13 @@
           {
             "name": "increment-iteration",
             "type": "command",
-            "command": "bash ${extensionPath}/hooks/increment-iteration.sh",
+            "command": "python3 ${extensionPath}/scripts/dispatch_hook.py increment-iteration",
             "description": "Increments the iteration"
           },
           {
             "name": "reinforce-pickle-persona",
             "type": "command",
-            "command": "bash ${extensionPath}/hooks/reinforce-persona.sh",
+            "command": "python3 ${extensionPath}/scripts/dispatch_hook.py reinforce-persona",
             "description": "Injects persona directives to ensure the agent explains its steps"
           }
         ]
@@ -26,7 +26,7 @@
           {
             "name": "check-limit",
             "type": "command",
-            "command": "bash ${extensionPath}/hooks/check-limit.sh",
+            "command": "python3 ${extensionPath}/scripts/dispatch_hook.py check-limit",
             "description": "Checks if the iteration or time limit has been reached"
           }
         ]
@@ -39,7 +39,7 @@
           {
             "name": "pickle-rick-loop",
             "type": "command",
-            "command": "bash ${extensionPath}/hooks/stop-hook.sh",
+            "command": "python3 ${extensionPath}/scripts/dispatch_hook.py stop-hook",
             "description": "The Pickle Rick infinite loop mechanism"
           }
         ]

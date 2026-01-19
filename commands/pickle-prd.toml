@@ -13,6 +13,10 @@ Run the setup script to create the session in PAUSED mode:
 ```bash
 bash "${extensionPath}/scripts/setup.sh" --paused $ARGUMENTS
 ```
+**Windows (PowerShell):**
+```powershell
+pwsh -File "${extensionPath}/scripts/setup.ps1" -paused $ARGUMENTS
+```
 **CRITICAL**: Capture the `Path:` from the output. That is your `SESSION_DIR`.
 
 ---
@@ -44,6 +48,13 @@ Your job is to **INTERROGATE** the user to build the PRD.
     Run this command:
     ```bash
     jq '.step = "breakdown"' "<SESSION_DIR>/state.json" > "<SESSION_DIR>/state.tmp" && mv "<SESSION_DIR>/state.tmp" "<SESSION_DIR>/state.json"
+    ```
+    **Windows (PowerShell):**
+    ```powershell
+    $path = Join-Path "<SESSION_DIR>" "state.json"
+    $json = Get-Content $path -Raw | ConvertFrom-Json
+    $json.step = "breakdown"
+    $json | ConvertTo-Json -Depth 5 | Set-Content $path
     ```
 4.  **Handoff**:
     "Wubba Lubba Dub Dub! The PRD is saved at `<SESSION_DIR>/prd.md`.

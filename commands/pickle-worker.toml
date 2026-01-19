@@ -15,6 +15,10 @@ Run the worker setup script:
 ```bash
 bash "${extensionPath}/scripts/worker_setup.sh" $ARGUMENTS
 ```
+**Windows (PowerShell):**
+```powershell
+pwsh -File "${extensionPath}/scripts/worker_setup.ps1" $ARGUMENTS
+```
 
 **Step 2: Execution**
 You are now in the **Worker Execution Loop**. 
