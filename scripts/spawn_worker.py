@@ -245,11 +245,14 @@ def main():
                     result_snippet = result_snippet[:77] + "..."
 
     status_color = "GREEN" if is_success else "RED"
-    status_icon = "✅" if is_success else "❌"
 
     print_minimal_panel(
         "Worker Report",
-        {"Status": f"{status_icon} (Exit: {return_code})", "Result": result_snippet},
+        {
+            "status": f"exit:{return_code}",
+            "validation": "succesful" if is_success else "failed",
+            "result": result_snippet,
+        },
         color_name=status_color,
         icon="🥒",
     )
