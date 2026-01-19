@@ -250,12 +250,15 @@ def main():
         "Worker Report",
         {
             "status": f"exit:{return_code}",
-            "validation": "succesful" if is_success else "failed",
+            "validation": "successful" if is_success else "failed",
             "result": result_snippet,
         },
         color_name=status_color,
         icon="🥒",
     )
+
+    # Explicit machine-readable status line for LLM parsing
+    print(f"status: exit:{return_code} validation: {'successful' if is_success else 'failed'}")
 
     if not is_success:
         sys.exit(1)

@@ -6,7 +6,7 @@
 set -euo pipefail
 
 # --- Configuration ---
-EXTENSION_DIR="$HOME/.gemini/extensions/pickle-rick"
+EXTENSION_DIR="${EXTENSION_DIR:-$HOME/.gemini/extensions/pickle-rick}"
 CURRENT_SESSION_POINTER="$EXTENSION_DIR/current_session_path"
 DEBUG_LOG="$EXTENSION_DIR/debug.log"
 
