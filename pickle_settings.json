@@ -1,0 +1,5 @@
+{
+  "default_max_iterations": 5,
+  "default_max_time_minutes": 60,
+  "default_worker_timeout_seconds": 1200
+}
