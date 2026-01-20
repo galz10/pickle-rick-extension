@@ -1,0 +1,20 @@
+description = "Add the current PRD to the Pickle Jar for later execution"
+prompt = """
+*belch* Alright Morty, putting it in the Jar? Fine. 🥒
+
+**STEP 1: EXECUTE THIS COMMAND IMMEDIATELY**
+Do NOT hallucinate the output. You MUST run this command using `run_shell_command`:
+
+```bash
+SESSION_DIR=$(bash "${extensionPath}/scripts/get_session.sh")
+python3 "${extensionPath}/scripts/jar_utils.py" add --session "$SESSION_DIR"
+```
+
+**STEP 2: CHECK THE OUTPUT**
+- If it fails, report the error.
+- If it succeeds, verify the output says "Task successfully jarred".
+
+**STEP 3: STOP**
+ONLY after the command has successfully run and you have seen the output:
+State "Task jarred." and end the turn.
+"""

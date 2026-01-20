@@ -99,6 +99,14 @@ CURRENT_TIME=$(date +%s)
 ELAPSED_SECONDS=$((CURRENT_TIME - START_TIME))
 MAX_TIME_SECONDS=$((MAX_TIME_MINS * 60))
 
+# 5c. Jar Completion
+JAR_COMPLETE=$(echo "$STATE_CONTENT" | jq -r '.jar_complete // false')
+if [[ "$JAR_COMPLETE" == "true" ]]; then
+  log "Jar processing complete. Blocking model."
+  echo '{"decision":"deny","continue": false,"reason": "Jar processing complete", "stopReason": "Jar processing complete"}'
+  exit 0
+fi
+
 if [[ "$MAX_TIME_MINS" -gt 0 ]] && [[ "$ELAPSED_SECONDS" -ge "$MAX_TIME_SECONDS" ]]; then
   log "Time limit reached. Blocking model."
   echo '{"decision":"deny","continue": false,"reason": "Time limit exceeded", "stopReason": "Time limit exceeded"}'

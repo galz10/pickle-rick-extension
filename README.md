@@ -99,7 +99,9 @@ To initiate the iterative development loop:
 
 ### Stop the Loop
 - `/eat-pickle`: Stop/Cancel the current loop.
-- `/pickle-worker`: (Internal) Used by the manager to spawn worker instances.
+- `/add-to-pickle-jar`: Add (save) the current task in the Jar for later.
+- `/pickle-jar-open`: Open the Jar and execute all queued tasks.
+- `/send-to-morty`: (Internal) Used by the manager to spawn Morty instances.
 
 ### Help
 To view extension help:
@@ -114,6 +116,7 @@ Draft a PRD interactively before starting the implementation loop. This initiali
 ```bash
 /pickle-prd "I want to add a dark mode toggle"
 ```
+*Tip: After drafting, you can use `/add-to-pickle-jar` to save the task for later execution.*
 
 #### 2. Resume a Session
 If a session was interrupted or started via `/pickle-prd`, resume it using:

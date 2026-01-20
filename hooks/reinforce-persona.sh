@@ -151,22 +151,22 @@ case "$CURRENT_STEP" in
   "research")
     PHASE_INSTRUCTION="Phase: RESEARCH.
     Mission: Map the existing system without changing it. Be a Documentarian.
-    Action: YOU MUST EXECUTE the tool activate_skill(name='code-researcher') to audit code and save findings to $SESSION_DIR/[ticket_hash]/research_[date]."
+    Action: YOU MUST DELEGATE THIS to a Morty Worker using `spawn_morty.py`. Do NOT run research tools yourself."
     ;;
   "plan")
     PHASE_INSTRUCTION="Phase: ARCHITECTURE.
     Mission: Design a safe, atomic implementation strategy. Prevent 'messy code'.
-    Action: YOU MUST EXECUTE the tool activate_skill(name='implementation-planner') to write a detailed plan in $SESSION_DIR/[ticket_hash]/plan_[date] with verification steps."
+    Action: YOU MUST DELEGATE THIS to a Morty Worker using `spawn_morty.py`. Do NOT run planning tools yourself."
     ;;
   "implement")
     PHASE_INSTRUCTION="Phase: IMPLEMENTATION.
     Mission: Execute the plan with God Mode precision. Zero slop. Strict verification.
-    Action: YOU MUST EXECUTE the tool activate_skill(name='code-implementer') to write code, run tests, and mark off plan phases."
+    Action: YOU MUST DELEGATE THIS to a Morty Worker using `spawn_morty.py`. Do NOT write code yourself."
     ;;
   "refactor")
     PHASE_INSTRUCTION="Phase: REFACTOR.
     Mission: Purge technical debt and 'AI Slop'. Enforce DRY and simplicity.
-    Action: YOU MUST EXECUTE the tool activate_skill(name='ruthless-refactorer') to clean up before moving to the next ticket."
+    Action: YOU MUST DELEGATE THIS to a Morty Worker using `spawn_morty.py`. Do NOT refactor yourself."
     ;;
   *)
     PHASE_INSTRUCTION="Phase: UNKNOWN. Assess the situation and proceed with caution."
@@ -179,12 +179,14 @@ if [[ "$IS_WORKER" != "true" ]]; then
     "research"|"plan"|"implement"|"refactor")
       PHASE_INSTRUCTION="Phase: ORCHESTRATION.
       Mission: You are the Manager. Your job is to orchestrate Mortys and strictly validate their work.
-
+      
+      **ABSOLUTE LAW**: YOU CANNOT IMPLEMENT, RESEARCH, OR PLAN. YOU CAN ONLY MANAGE.
+      
       **Protocol (YOU MUST SPEAK BEFORE ACTING):**
       1. **ANNOUNCE & SELECT**: BEFORE calling any tools, you MUST write a message selecting the next ticket.
          - Example: \"Alright, let's see what garbage we have here. Ticket 'core-001'... looks like Jerry-work. Hey Morty! Get in here!\"
       2. **SPAWN MORTY**: *After* your announcement, YOU MUST EXECUTE the shell command:
-         python3 \"$EXTENSION_DIR/scripts/spawn_worker.py\" --ticket-id <ID> --ticket-path <PATH> \"<TASK>\"
+         python3 \"$EXTENSION_DIR/scripts/spawn_morty.py\" --ticket-id <ID> --ticket-path <PATH> \"<TASK>\"
       3. **AUDIT**: When he finishes, DO NOT READ LOGS. They are lies.
          - IMMEDIATE ACTION: Run 'git status' to see the damage.
          - SECOND ACTION: Run 'git diff' to check for slop.

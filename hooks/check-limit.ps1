@@ -39,6 +39,12 @@ $MaxTime = ($State.max_time_minutes -as [int]) * 60
 $MaxIter = $State.max_iterations -as [int]
 $Iter = $State.iteration -as [int]
 
+if ($State.jar_complete) {
+    Log-Message "Jar processing complete"
+    Write-Output (@{ decision="deny"; continue=$false; reason="Jar processing complete"; stopReason="Jar processing complete" } | ConvertTo-Json)
+    exit 0
+}
+
 if ($MaxTime -gt 0 -and $Elapsed -ge $MaxTime) {
     Log-Message "Time Limit Exceeded"
     Write-Output (@{ decision="deny"; continue=$false; reason="Time limit"; stopReason="Time limit" } | ConvertTo-Json)

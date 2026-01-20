@@ -59,8 +59,12 @@ Your job is to **INTERROGATE** the user to build the PRD.
 4.  **Handoff**:
     "Wubba Lubba Dub Dub! The PRD is saved at `<SESSION_DIR>/prd.md`.
     I've advanced the state to 'breakdown'.
-    To start the implementation loop, run:
-    `/pickle --resume`"
+
+    To start the implementation loop and let me cook, run:
+    `/pickle --resume`
+
+    Or, to stash this task for the night shift, run:
+    `/add-to-pickle-jar`"
 
 ---
 
