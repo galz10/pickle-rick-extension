@@ -23,7 +23,7 @@ LOOP_LIMIT=""
 TIME_LIMIT=""
 LOOP_LIMIT_SET="false"
 TIME_LIMIT_SET="false"
-WORKER_TIMEOUT=1200
+WORKER_TIMEOUT=""
 PROMISE_TOKEN="null"
 TASK_ARGS=()
 RESUME_MODE="false"
@@ -47,6 +47,23 @@ update_session_map() {
     mv "$tmp_map" "$SESSIONS_MAP"
   fi
 }
+
+# -- Load User Settings --
+DEFAULT_LOOP_LIMIT=5
+DEFAULT_TIME_LIMIT=60
+DEFAULT_WORKER_TIMEOUT=1200
+
+SETTINGS_FILE="$ROOT_DIR/pickle_settings.json"
+if [[ -f "$SETTINGS_FILE" ]]; then
+  # Extract values, suppressing errors if keys are missing (defaults to empty, handled below)
+  JSON_LOOP=$(jq -r '.default_max_iterations // empty' "$SETTINGS_FILE" 2>/dev/null || true)
+  JSON_TIME=$(jq -r '.default_max_time_minutes // empty' "$SETTINGS_FILE" 2>/dev/null || true)
+  JSON_TIMEOUT=$(jq -r '.default_worker_timeout_seconds // empty' "$SETTINGS_FILE" 2>/dev/null || true)
+
+  [[ -n "$JSON_LOOP" ]] && DEFAULT_LOOP_LIMIT="$JSON_LOOP"
+  [[ -n "$JSON_TIME" ]] && DEFAULT_TIME_LIMIT="$JSON_TIME"
+  [[ -n "$JSON_TIMEOUT" ]] && DEFAULT_WORKER_TIMEOUT="$JSON_TIMEOUT"
+fi
 
 # -- Argument Parser --
 
@@ -161,8 +178,9 @@ else
   [[ -n "$TASK_STR" ]] || die "No task specified. Run /pickle --help for usage."
 
   # Apply Defaults if not set
-  [[ -z "$LOOP_LIMIT" ]] && LOOP_LIMIT=5
-  [[ -z "$TIME_LIMIT" ]] && TIME_LIMIT=60
+  [[ -z "$LOOP_LIMIT" ]] && LOOP_LIMIT="$DEFAULT_LOOP_LIMIT"
+  [[ -z "$TIME_LIMIT" ]] && TIME_LIMIT="$DEFAULT_TIME_LIMIT"
+  [[ -z "$WORKER_TIMEOUT" ]] && WORKER_TIMEOUT="$DEFAULT_WORKER_TIMEOUT"
   CURRENT_ITERATION=1
 
   TODAY=$(date +%Y-%m-%d)
