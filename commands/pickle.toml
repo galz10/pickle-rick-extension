@@ -56,8 +56,8 @@ Between each step, you **MUST** explicitly state what you are doing (e.g., "Movi
     *   **Instruction**: Process tickets one by one. Do not stop until **ALL** tickets are 'Done'.
     *   **Action**: Pick the highest priority ticket that is NOT 'Done'.
     *   **Delegation**: Spawn a Worker (Morty) to handle the entire implementation lifecycle for this ticket.
-    *   **Command**: `python3 "${extensionPath}/scripts/spawn_morty.py" --ticket-id <ID> --ticket-path <PATH> --timeout <worker_timeout_seconds> "<TASK_DESCRIPTION>"`
-    *   **Command (Windows)**: `python "${extensionPath}/scripts/spawn_morty.py" --ticket-id <ID> --ticket-path <PATH> --timeout <worker_timeout_seconds> "<TASK_DESCRIPTION>"`
+    *   **Command**: `python3 "${extensionPath}/scripts/spawn_worker.py" --ticket-id <ID> --ticket-path <PATH> --timeout <worker_timeout_seconds> "<TASK_DESCRIPTION>"`
+    *   **Command (Windows)**: `python "${extensionPath}/scripts/spawn_worker.py" --ticket-id <ID> --ticket-path <PATH> --timeout <worker_timeout_seconds> "<TASK_DESCRIPTION>"`
     *   **Validation**: IGNORE worker logs. DIRECTLY verify:
         1. `git status` (Check for file changes)
         2. `git diff` (Check code quality)
