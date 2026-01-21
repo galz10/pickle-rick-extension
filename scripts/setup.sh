@@ -11,14 +11,19 @@ set -euo pipefail
 # -- Configuration --
 ROOT_DIR="$HOME/.gemini/extensions/pickle-rick"
 SESSIONS_ROOT="$ROOT_DIR/sessions"
+JAR_ROOT="$ROOT_DIR/jar"
+WORKTREES_ROOT="$ROOT_DIR/worktrees"
 SESSIONS_MAP="$ROOT_DIR/current_sessions.json"
+
+# Ensure core directories exist
+mkdir -p "$SESSIONS_ROOT" "$JAR_ROOT" "$WORKTREES_ROOT"
 
 # -- State Variables --
 LOOP_LIMIT=""
 TIME_LIMIT=""
 LOOP_LIMIT_SET="false"
 TIME_LIMIT_SET="false"
-WORKER_TIMEOUT=1200
+WORKER_TIMEOUT=""
 PROMISE_TOKEN="null"
 TASK_ARGS=()
 RESUME_MODE="false"
@@ -42,6 +47,23 @@ update_session_map() {
     mv "$tmp_map" "$SESSIONS_MAP"
   fi
 }
+
+# -- Load User Settings --
+DEFAULT_LOOP_LIMIT=5
+DEFAULT_TIME_LIMIT=60
+DEFAULT_WORKER_TIMEOUT=1200
+
+SETTINGS_FILE="$ROOT_DIR/pickle_settings.json"
+if [[ -f "$SETTINGS_FILE" ]]; then
+  # Extract values, suppressing errors if keys are missing (defaults to empty, handled below)
+  JSON_LOOP=$(jq -r '.default_max_iterations // empty' "$SETTINGS_FILE" 2>/dev/null || true)
+  JSON_TIME=$(jq -r '.default_max_time_minutes // empty' "$SETTINGS_FILE" 2>/dev/null || true)
+  JSON_TIMEOUT=$(jq -r '.default_worker_timeout_seconds // empty' "$SETTINGS_FILE" 2>/dev/null || true)
+
+  [[ -n "$JSON_LOOP" ]] && DEFAULT_LOOP_LIMIT="$JSON_LOOP"
+  [[ -n "$JSON_TIME" ]] && DEFAULT_TIME_LIMIT="$JSON_TIME"
+  [[ -n "$JSON_TIMEOUT" ]] && DEFAULT_WORKER_TIMEOUT="$JSON_TIMEOUT"
+fi
 
 # -- Argument Parser --
 
@@ -156,8 +178,9 @@ else
   [[ -n "$TASK_STR" ]] || die "No task specified. Run /pickle --help for usage."
 
   # Apply Defaults if not set
-  [[ -z "$LOOP_LIMIT" ]] && LOOP_LIMIT=5
-  [[ -z "$TIME_LIMIT" ]] && TIME_LIMIT=60
+  [[ -z "$LOOP_LIMIT" ]] && LOOP_LIMIT="$DEFAULT_LOOP_LIMIT"
+  [[ -z "$TIME_LIMIT" ]] && TIME_LIMIT="$DEFAULT_TIME_LIMIT"
+  [[ -z "$WORKER_TIMEOUT" ]] && WORKER_TIMEOUT="$DEFAULT_WORKER_TIMEOUT"
   CURRENT_ITERATION=1
 
   TODAY=$(date +%Y-%m-%d)
@@ -173,33 +196,43 @@ else
 
   # -- JSON Generation --
 
-  # Handle JSON string escaping
-  JSON_SAFE_PROMPT=$(echo "$TASK_STR" | sed 's/"/\\"/g')
-  JSON_SAFE_PROMISE=$( [[ "$PROMISE_TOKEN" == "null" ]] && echo "null" || echo "\"$PROMISE_TOKEN\"" )
   TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
   
   # Determine initial active state
   INITIAL_ACTIVE="true"
   [[ "${PAUSED_MODE:-false}" == "true" ]] && INITIAL_ACTIVE="false"
 
-  cat > "$STATE_PATH" <<JSON
-{
-  "active": $INITIAL_ACTIVE,
-  "working_dir": "$PWD",
-  "step": "prd",
-  "iteration": 1,
-  "max_iterations": $LOOP_LIMIT,
-  "max_time_minutes": $TIME_LIMIT,
-  "worker_timeout_seconds": $WORKER_TIMEOUT,
-  "start_time_epoch": $START_EPOCH,
-  "completion_promise": $JSON_SAFE_PROMISE,
-  "original_prompt": "$JSON_SAFE_PROMPT",
-  "current_ticket": null,
-  "history": [],
-  "started_at": "$TIMESTAMP",
-  "session_dir": "$FULL_SESSION_PATH"
-}
-JSON
+  jq -n \
+    --argjson active "$INITIAL_ACTIVE" \
+    --arg working_dir "$PWD" \
+    --arg step "prd" \
+    --argjson iteration 1 \
+    --argjson max_iterations "$LOOP_LIMIT" \
+    --argjson max_time_minutes "$TIME_LIMIT" \
+    --argjson worker_timeout_seconds "$WORKER_TIMEOUT" \
+    --argjson start_time_epoch "$START_EPOCH" \
+    --arg completion_promise "$PROMISE_TOKEN" \
+    --arg original_prompt "$TASK_STR" \
+    --argjson current_ticket null \
+    --argjson history [] \
+    --arg started_at "$TIMESTAMP" \
+    --arg session_dir "$FULL_SESSION_PATH" \
+    '{
+      active: $active,
+      working_dir: $working_dir,
+      step: $step,
+      iteration: $iteration,
+      max_iterations: $max_iterations,
+      max_time_minutes: $max_time_minutes,
+      worker_timeout_seconds: $worker_timeout_seconds,
+      start_time_epoch: $start_time_epoch,
+      completion_promise: (if $completion_promise == "null" then null else $completion_promise end),
+      original_prompt: $original_prompt,
+      current_ticket: $current_ticket,
+      history: $history,
+      started_at: $started_at,
+      session_dir: $session_dir
+    }' > "$STATE_PATH"
 
 fi
 
