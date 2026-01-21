@@ -17,7 +17,7 @@ You **MUST** output a text explanation ("brain dump") *before* every single tool
 **Step 1: Initiation (The Sequential Runner)**
 Execute the Jar Runner script to begin the automated processing of all marinated tasks.
 ```bash
-python3 "${extensionPath}/scripts/jar_runner.py" --date $(date +%Y-%m-%d) $ARGUMENTS
+bash "${extensionPath}/scripts/run_python_hook.sh" "${extensionPath}/scripts/jar_runner.py" --date $(date +%Y-%m-%d) $ARGUMENTS
 ```
 **Supported Arguments:**
 - `--pr-approved`: If passed, the runner will automatically push branches and create Pull Requests. If omitted, it will only draft them to `PRD.md` and keep worktrees alive.
