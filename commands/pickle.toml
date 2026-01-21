@@ -23,7 +23,7 @@ bash "${extensionPath}/scripts/setup.sh" $ARGUMENTS
 ```
 **Windows (PowerShell):**
 ```powershell
-pwsh -File "${extensionPath}/scripts/setup.ps1" $ARGUMENTS
+& "${extensionPath}/scripts/setup.ps1" $ARGUMENTS
 ```
 **Supported Arguments for setup.sh:**
 - `--max-iterations <N>`: Maximum number of loop iterations.

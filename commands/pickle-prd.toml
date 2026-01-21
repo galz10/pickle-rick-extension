@@ -15,7 +15,7 @@ bash "${extensionPath}/scripts/setup.sh" --paused $ARGUMENTS
 ```
 **Windows (PowerShell):**
 ```powershell
-pwsh -File "${extensionPath}/scripts/setup.ps1" -paused $ARGUMENTS
+& "${extensionPath}/scripts/setup.ps1" -paused $ARGUMENTS
 ```
 **CRITICAL**: Capture the `Path:` from the output. That is your `SESSION_DIR`.
 
