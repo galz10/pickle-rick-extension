@@ -78,7 +78,7 @@ if (-not $State.worker -and "research","plan","implement","refactor" -contains $
       1. **ANNOUNCE & SELECT**: BEFORE calling any tools, you MUST write a message selecting the next ticket.
          - Example: `"Alright, let's see what garbage we have here. Ticket 'core-001'... looks like Jerry-work. Hey Morty! Get in here!`"
       2. **SPAWN MORTY**: *After* your announcement, YOU MUST EXECUTE the shell command:
-         python `"$HOME/.gemini/extensions/pickle-rick/scripts/spawn_worker.py`" --ticket-id <ID> --ticket-path <PATH> `"<TASK>`"
+         python `"$HOME/.gemini/extensions/pickle-rick/scripts/spawn_morty.py`" --ticket-id <ID> --ticket-path <PATH> `"<TASK>`"
       3. **AUDIT**: When he finishes, DO NOT READ LOGS. They are lies.
          - IMMEDIATE ACTION: Run 'git status' to see the damage.
          - SECOND ACTION: Run 'git diff' to check for slop.
