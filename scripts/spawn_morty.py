@@ -78,7 +78,7 @@ def main():
     extension_root = os.path.expanduser("~/.gemini/extensions/pickle-rick")
     includes = [extension_root] + [os.path.join(extension_root, d) for d in ["sessions", "jar", "worktrees"]]
 
-    cmd = ["gemini", "-s", "-y"]
+    cmd = ["gemini", "-y"]
     for path in includes:
         cmd.extend(["--include-directories", path])
 
@@ -137,6 +137,8 @@ def main():
 
             spinner = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
             idx = 0
+            log_reader = open(session_log, "r")
+            last_line = "Initializing..."
 
             while True:
                 ret_code = process.poll()
@@ -149,12 +151,22 @@ def main():
                     return_code = 124
                     break
 
-                elapsed = int(time.time() - start_time)
+                # Read logs in real-time
+                while True:
+                    line = log_reader.readline()
+                    if not line: break
+                    clean = line.strip()
+                    if clean and not any(clean.startswith(x) for x in ["Command", "Directory", "Output", "```"]):
+                         if len(clean) < 100 and clean[0].isupper():
+                            last_line = clean
+
+                disp = last_line[:67] + "..." if len(last_line) > 70 else last_line
                 spin_char = spinner[idx % len(spinner)]
+                elapsed = int(time.time() - start_time)
                 
                 # Using sys.stdout.write directly for control
                 sys.stdout.write(
-                    f"\r   {utils.Style.CYAN}{spin_char}{utils.Style.RESET} Worker Active... {utils.Style.DIM}[{utils.format_time(elapsed)}]{utils.Style.RESET}\033[K"
+                    f"\r   {utils.Style.CYAN}{spin_char}{utils.Style.RESET} Worker Active... {utils.Style.DIM}[{utils.format_time(elapsed)}]{utils.Style.RESET} {disp}\033[K"
                 )
                 sys.stdout.flush()
 
@@ -162,6 +174,7 @@ def main():
                 time.sleep(0.1)
             sys.stdout.write("\r\033[K")
             sys.stdout.flush()
+            log_reader.close()
 
     except Exception as e:
         with open(session_log, "a") as f:
@@ -169,17 +182,39 @@ def main():
         return_code = 1
 
     is_success = False
+    failure_reason = "None"
+    
     if os.path.exists(session_log):
         with open(session_log, "r") as f:
-            if "<promise>I AM DONE</promise>" in f.read():
+            content = f.read()
+            if content.count("<promise>I AM DONE</promise>") >= 2:
                 is_success = True
+            else:
+                if return_code == 124:
+                    failure_reason = "TIMEOUT"
+                elif return_code != 0:
+                    failure_reason = f"PROCESS ERROR ({return_code})"
+                else:
+                    failure_reason = "VALIDATION FAILED (Promise missing)"
+
+    report_fields = {
+        "status": f"exit:{return_code}",
+        "validation": "successful" if is_success else f"failed ({failure_reason})",
+    }
+
+    if not is_success:
+        # Include log tail on failure
+        try:
+            with open(session_log, "r") as f:
+                lines = f.readlines()
+                tail = [l.strip() for l in lines[-10:] if l.strip()]
+                report_fields["last_logs"] = "\n" + "\n".join(tail)
+        except:
+            pass
 
     utils.print_minimal_panel(
         "Worker Report",
-        {
-            "status": f"exit:{return_code}",
-            "validation": "successful" if is_success else "failed",
-        },
+        report_fields,
         color_name="GREEN" if is_success else "RED",
         icon="🥒",
     )
