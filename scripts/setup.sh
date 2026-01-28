@@ -9,11 +9,17 @@
 set -euo pipefail
 
 # -- Configuration --
-ROOT_DIR="$HOME/.gemini/extensions/pickle-rick"
-SESSIONS_ROOT="$ROOT_DIR/sessions"
-JAR_ROOT="$ROOT_DIR/jar"
-WORKTREES_ROOT="$ROOT_DIR/worktrees"
-SESSIONS_MAP="$ROOT_DIR/current_sessions.json"
+# Locate extension root relative to this script
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+EXTENSION_DIR="$(dirname "$SCRIPT_DIR")"
+
+source "$SCRIPT_DIR/utils.sh"
+PROJECT_ROOT=$(resolve_project_root)
+
+SESSIONS_ROOT="$EXTENSION_DIR/sessions"
+JAR_ROOT="$EXTENSION_DIR/jar"
+WORKTREES_ROOT="$EXTENSION_DIR/worktrees"
+SESSIONS_MAP="$EXTENSION_DIR/current_sessions.json"
 
 # Ensure core directories exist
 mkdir -p "$SESSIONS_ROOT" "$JAR_ROOT" "$WORKTREES_ROOT"
@@ -130,9 +136,9 @@ if [[ "$RESUME_MODE" == "true" ]]; then
   if [[ -n "$RESUME_PATH" ]]; then
     FULL_SESSION_PATH="$RESUME_PATH"
   elif [[ -f "$SESSIONS_MAP" ]]; then
-    FULL_SESSION_PATH=$(jq -r --arg cwd "$PWD" '.[$cwd] // empty' "$SESSIONS_MAP")
+    FULL_SESSION_PATH=$(jq -r --arg cwd "$PROJECT_ROOT" '.[$cwd] // empty' "$SESSIONS_MAP")
     if [[ -z "$FULL_SESSION_PATH" ]]; then
-        die "No active session found for current directory ($PWD)."
+        die "No active session found for project root ($PROJECT_ROOT)."
     fi
   else
     die "No active sessions found (and no path provided)."
@@ -171,7 +177,7 @@ if [[ "$RESUME_MODE" == "true" ]]; then
   CURRENT_ITERATION=$(echo "$STATE_CONTENT" | jq -r '.iteration')
   PROMISE_TOKEN=$(echo "$STATE_CONTENT" | jq -r '.completion_promise // "null"')
 
-  update_session_map "$PWD" "$FULL_SESSION_PATH"
+  update_session_map "$PROJECT_ROOT" "$FULL_SESSION_PATH"
 
 else
   # -- New Session Logic --
@@ -188,11 +194,23 @@ else
   HASH=$(openssl rand -hex 4)
   SESSION_ID="${TODAY}-${HASH}"
 
+  # -- Git Worktree Setup --
+  WORKING_DIR="$PROJECT_ROOT"
+  if [[ -d "$PROJECT_ROOT/.git" ]] || git -C "$PROJECT_ROOT" rev-parse --is-inside-work-tree &>/dev/null; then
+    echo "📡 Git detected. Creating worktree in .worktrees/..."
+    # Call git_utils.py to create worktree
+    WT_PATH=$(python3 "$ROOT_DIR/scripts/git_utils.py" add --repo "$PROJECT_ROOT" --id "$SESSION_ID" | grep "Successfully created worktree:" | cut -d':' -f2 | xargs || true)
+    if [[ -n "$WT_PATH" ]]; then
+      WORKING_DIR="$WT_PATH"
+      echo "📂 Isolated Workspace: $WORKING_DIR"
+    fi
+  fi
+
   FULL_SESSION_PATH="$SESSIONS_ROOT/$SESSION_ID"
   STATE_PATH="$FULL_SESSION_PATH/state.json"
 
   mkdir -p "$FULL_SESSION_PATH"
-  update_session_map "$PWD" "$FULL_SESSION_PATH"
+  update_session_map "$PROJECT_ROOT" "$FULL_SESSION_PATH"
 
   # -- JSON Generation --
 
@@ -204,7 +222,7 @@ else
 
   jq -n \
     --argjson active "$INITIAL_ACTIVE" \
-    --arg working_dir "$PWD" \
+    --arg working_dir "$WORKING_DIR" \
     --arg step "prd" \
     --argjson iteration 1 \
     --argjson max_iterations "$LOOP_LIMIT" \

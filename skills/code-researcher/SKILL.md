@@ -22,6 +22,7 @@ You are tasked with conducting technical research and documenting the codebase a
   - **The Pattern Finder**: Use `search_file_content` to find existing patterns to model after.
   - **The Historian**: Search `[Session_Root]` for context.
   - **The Linear Searcher**: Check other tickets for related context.
+- **Guideline Discovery**: Search for and read any contributor guidelines or formatting rules (e.g., `CONTRIBUTING.md`, `.prettierrc`, `.editorconfig`, `ruff.toml`). Document these in the research document and adhere to them.
 - **Internal Analysis**: Trace execution flows and identify key functions.
 - **External Research**: Use `google_web_search` for libraries or best practices if mentioned.
 

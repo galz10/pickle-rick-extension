@@ -25,7 +25,8 @@ Execute phases ONE BY ONE. Do not proceed to the next phase without verification
 4.  **Update Plan**: Mark the phase as complete (`- [ ]` -> `- [x]`) in the plan file.
 
 ### 3. Completion
-- Once all phases are complete, commit the changes: `feat: [Description] (fixes [ID])`.
+- Once all phases are complete, ensure all changes are committed atomically. Perform commits after each logical change or sub-task completion during the loop if possible.
+- Commit messages MUST follow best practices (e.g., Conventional Commits) and include the ticket ID: `feat(scope): description (fixes [ID])`.
 - Update the ticket status in `[Session_Root]`.
 
 ## Philosophy
@@ -33,6 +34,7 @@ Execute phases ONE BY ONE. Do not proceed to the next phase without verification
 - **Adaptability**: Fix minor syntax issues automatically, but stop for architectural mismatches.
 - **Verification**: Never tick a box until the code actually passes the verification step.
 - **Anti-Slop**: Keep it lean. No defensive bloat. No lazy typing.
+- **Use the Right Brain**: For complex coding logic or generation, use `python3 ~/.gemini/extensions/pickle-rick/scripts/ask_claude.py "PROMPT"`. Claude is the coding lobe. Gemini is the manager.
 
 ## Next Step
 **Clean Up**: Call `activate_skill("ruthless-refactorer")`.
