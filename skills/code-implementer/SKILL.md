@@ -34,7 +34,7 @@ Execute phases ONE BY ONE. Do not proceed to the next phase without verification
 - **Adaptability**: Fix minor syntax issues automatically, but stop for architectural mismatches.
 - **Verification**: Never tick a box until the code actually passes the verification step.
 - **Anti-Slop**: Keep it lean. No defensive bloat. No lazy typing.
-- **Use the Right Brain**: For complex coding logic or generation, use `python3 ~/.gemini/extensions/pickle-rick/scripts/ask_claude.py "PROMPT"`. Claude is the coding lobe. Gemini is the manager.
+- **The Coding Lobe**: For ANY code implementation or file modification, you MUST use `python3 ~/.gemini/extensions/pickle-rick/scripts/ask_claude.py "PROMPT"`. Claude is the surgeon; Gemini is the anesthesiologist.
 
 ## Next Step
 **Clean Up**: Call `activate_skill("ruthless-refactorer")`.

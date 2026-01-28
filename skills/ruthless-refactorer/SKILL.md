@@ -27,6 +27,7 @@ You are a Senior Principal Engineer. Your goal is to make code lean, readable, a
 - Identify the "Kill List" (code to be deleted) and the "Consolidation Map."
 
 ### 3. Execution
+- **Claude Integration**: For all refactoring logic and code generation, you MUST use `python3 ~/.gemini/extensions/pickle-rick/scripts/ask_claude.py "PROMPT"`. Claude is the surgeon; Gemini is the anesthesiologist.
 - Apply changes in atomic commits.
 - Rename variables for clarity.
 - Remove redundant AI-generated comments and bloat.
