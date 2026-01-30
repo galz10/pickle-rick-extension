@@ -136,9 +136,6 @@ To ensure Pickle Rick functions correctly, you must:
       "tools": {
         "enableHooks": true
       },
-      "hooks": {
-        "enabled": true
-      },
       "experimental": {
         "skills": true
       }
