@@ -1,0 +1,2 @@
+[test]
+preload = ["./src/ui/test-setup.ts"]

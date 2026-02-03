@@ -1,0 +1,53 @@
+{
+  "name": "pickle-rick",
+  "version": "0.1.0",
+  "description": "Pickle Rick CLI Orchestrator - Autonomous coding agent with TUI interface",
+  "type": "module",
+  "bin": {
+    "pickle": "./bin.js"
+  },
+  "files": [
+    "bin.js",
+    "src/**/*",
+    "dist/**/*"
+  ],
+  "engines": {
+    "bun": ">=1.0.0"
+  },
+  "keywords": [
+    "cli",
+    "ai",
+    "coding-agent",
+    "tui",
+    "gemini",
+    "automation"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/galz10/pickle-rick-extension",
+    "directory": "cli"
+  },
+  "scripts": {
+    "dev": "bun run src/index.ts",
+    "build": "bun build src/index.ts --compile --minify --target=bun-darwin-arm64 --outfile dist/pickle && bun build src/services/execution/worker-executor.ts --minify --target=bun --outfile dist/worker-executor.js",
+    "check": "tsc --noEmit",
+    "prepublishOnly": "bun run check"
+  },
+  "dependencies": {
+    "@opentui/core": "0.1.75",
+    "commander": "^13.0.0",
+    "emscripten": "^0.0.2-beta",
+    "gameboy-emulator": "^1.1.2",
+    "opentui-gameboy": "^0.1.0",
+    "picocolors": "^1.1.0",
+    "serverboy": "^0.0.7",
+    "simple-git": "^3.27.0",
+    "yaml": "^2.7.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5.3.0"
+  }
+}
