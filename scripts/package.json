@@ -1,0 +1,8 @@
+{
+  "name": "pickle-rick-scripts",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc"
+  }
+}
