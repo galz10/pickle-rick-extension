@@ -6,8 +6,8 @@ prompt = """
 Do NOT hallucinate the output. You MUST run this command using `run_shell_command`:
 
 ```bash
-SESSION_DIR=$(bash "${extensionPath}/scripts/get_session.sh")
-node "${extensionPath}/scripts/jar_utils.js" add --session "$SESSION_DIR"
+SESSION_DIR=$(bash "${extensionPath}/extension/get_session.js")
+node "${extensionPath}/extension/jar_utils.js" add --session "$SESSION_DIR"
 ```
 
 **STEP 2: CHECK THE OUTPUT**

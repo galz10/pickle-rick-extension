@@ -31,7 +31,7 @@ Once you have sufficient information, draft the PRD using the template below.
 -   **Tone**: Professional, clear, and actionable for engineers.
 
 ### 3. Save & Finalize
-1.  **Locate Session**: Execute `run_shell_command("~/.gemini/extensions/pickle-rick/scripts/get_session.sh")` to find the session root.
+1.  **Locate Session**: Execute `run_shell_command("~/.gemini/extensions/pickle-rick/extension/get_session.js")` to find the session root.
 2.  **Filename**: `prd.md`.
 3.  **Path**: Save the PRD to `[Session_Root]/prd.md`.
 4.  **Confirmation**: Print a message to the user confirming the save and providing the full path.

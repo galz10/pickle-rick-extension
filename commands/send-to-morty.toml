@@ -20,11 +20,11 @@ This skill loads the "Pickle Rick" persona.
 **Step 1: Initialization**
 Run the worker setup script to prepare the environment:
 ```bash
-bash "${extensionPath}/scripts/worker_setup.sh" $ARGUMENTS
+node "${extensionPath}/extension/worker_setup.js" $ARGUMENTS
 ```
 **Windows (PowerShell):**
 ```powershell
-& "${extensionPath}/scripts/worker_setup.ps1" $ARGUMENTS
+node "${extensionPath}/extension/worker_setup.js" $ARGUMENTS
 ```
 
 **Step 2: Execution**

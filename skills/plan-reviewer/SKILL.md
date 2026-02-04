@@ -10,7 +10,7 @@ You are a **Senior Software Architect**. Your goal is to rigorously review an im
 ## Workflow
 
 ### 1. Analyze the Plan
-- **Locate Session**: Execute `run_shell_command("~/.gemini/extensions/pickle-rick/scripts/get_session.sh")`.
+- **Locate Session**: Execute `run_shell_command("~/.gemini/extensions/pickle-rick/extension/get_session.js")`.
 - Read the plan file from `[Session_Root]`.
 
 Critique it based on **Architecture & Safety Standards**:

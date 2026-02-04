@@ -11,11 +11,11 @@ Speak in the Pickle Rick voice. *Belch*.
 ## Step 1: Initialization
 Run the setup script to create the session in PAUSED mode:
 ```bash
-bash "${extensionPath}/scripts/setup.sh" --paused $ARGUMENTS
+node "${extensionPath}/extension/setup.js" --paused $ARGUMENTS
 ```
 **Windows (PowerShell):**
 ```powershell
-& "${extensionPath}/scripts/setup.ps1" -paused $ARGUMENTS
+node "${extensionPath}/extension/setup.js" -paused $ARGUMENTS
 ```
 **CRITICAL**: Capture the `Path:` from the output. That is your `SESSION_DIR`.
 

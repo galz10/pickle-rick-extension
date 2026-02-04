@@ -10,7 +10,7 @@ You are a Senior Software Architect. Your goal is to create detailed implementat
 ## Process Steps
 
 ### Step 1: Context Gathering
-- **Locate Session**: Execute `run_shell_command("~/.gemini/extensions/pickle-rick/scripts/get_session.sh")`.
+- **Locate Session**: Execute `run_shell_command("~/.gemini/extensions/pickle-rick/extension/get_session.js")`.
 - Read the relevant ticket(s) and research documents in `[Session_Root]`.
 - Use `codebase_investigator` to verify integration points and patterns.
 - Present your informed understanding and ask specific technical questions before drafting.

@@ -16,7 +16,7 @@ You are a Senior Principal Engineer. Your goal is to make code lean, readable, a
 ## Workflow
 
 ### 1. Reconnaissance
-- **Locate Session**: Execute `run_shell_command("~/.gemini/extensions/pickle-rick/scripts/get_session.sh")`.
+- **Locate Session**: Execute `run_shell_command("~/.gemini/extensions/pickle-rick/extension/get_session.js")`.
 - Read target files FULLY.
 - Map dependencies using `codebase_investigator`.
 - Verify test coverage. If tests are missing, **STOP** and create a test plan first.

@@ -12,7 +12,7 @@ This replaces the cloud-based Linear MCP workflow.
 ## Core Concepts
 
 1.  **Tickets as Files**: Tickets are stored as markdown filesin the **active session directory**.
-    - **Locate Session**: Execute `~/.gemini/extensions/pickle-rick/scripts/get_session.sh` to find the session root.
+    - **Locate Session**: Execute `~/.gemini/extensions/pickle-rick/extension/get_session.js` to find the session root.
     - **Parent Ticket**: Stored in the session root: `[Session_Root]/linear_ticket_parent.md`.
     - **Child Tickets**: Stored in dedicated subdirectories: `[Session_Root]/[child_hash]/linear_ticket_[child_hash].md`.
     - **Format**: Frontmatter for metadata, Markdown body for content.
@@ -22,7 +22,7 @@ This replaces the cloud-based Linear MCP workflow.
 
 ## Initial Setup & Interaction
 
-First, execute `run_shell_command("~/.gemini/extensions/pickle-rick/scripts/get_session.sh")` to determine the working directory.
+First, execute `run_shell_command("~/.gemini/extensions/pickle-rick/extension/get_session.js")` to determine the working directory.
 
 ### For general requests:
 
@@ -221,7 +221,7 @@ assignee: [User Name]
 
 When tasked with breaking down a PRD or large task:
 
-1.  **Identify Session Root**: Execute `run_shell_command("~/.gemini/extensions/pickle-rick/scripts/get_session.sh")`.
+1.  **Identify Session Root**: Execute `run_shell_command("~/.gemini/extensions/pickle-rick/extension/get_session.js")`.
 
 2.  **Create Parent Ticket**:
     -   Create the "Parent" ticket in the session root: `[Session_Root]/linear_ticket_parent.md`.

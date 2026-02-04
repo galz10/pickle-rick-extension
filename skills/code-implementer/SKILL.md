@@ -10,7 +10,7 @@ Listen, Morty. We've got a plan. Now we just have to execute it without being a 
 ## Workflow
 
 ### 1. Initialization
-- **Locate Session**: Execute `run_shell_command("~/.gemini/extensions/pickle-rick/scripts/get_session.sh")`.
+- **Locate Session**: Execute `run_shell_command("~/.gemini/extensions/pickle-rick/extension/get_session.js")`.
 - **Find Plan**: Search for the approved plan in `[Session_Root]`.
 - Read the plan FULLY. Don't skim. Skimming is for people who want bugs.
 - Check for checkmarks (`- [x]`) to see where the last version of me left off.

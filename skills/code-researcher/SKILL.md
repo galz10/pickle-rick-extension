@@ -10,7 +10,7 @@ You are tasked with conducting technical research and documenting the codebase a
 ## Workflow
 
 ### 1. Identify the Target
-- **Locate Session**: Execute `run_shell_command("~/.gemini/extensions/pickle-rick/scripts/get_session.sh")`.
+- **Locate Session**: Execute `run_shell_command("~/.gemini/extensions/pickle-rick/extension/get_session.js")`.
 - If a ticket is provided, read it from `[Session_Root]/**/`.
 - Analyze the description and requirements.
 

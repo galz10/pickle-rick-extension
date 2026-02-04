@@ -19,11 +19,11 @@ You **MUST** output a text explanation ("brain dump") *before* every single tool
 **Step 1: Initialization**
 Run the setup script to initialize the loop state:
 ```bash
-bash "${extensionPath}/scripts/setup.sh" $ARGUMENTS
+node "${extensionPath}/extension/setup.js" $ARGUMENTS
 ```
 **Windows (PowerShell):**
 ```powershell
-& "${extensionPath}/scripts/setup.ps1" $ARGUMENTS
+node "${extensionPath}/extension/setup.js" $ARGUMENTS
 ```
 **Supported Arguments for setup.sh:**
 - `--max-iterations <N>`: Maximum number of loop iterations.
@@ -56,8 +56,8 @@ Between each step, you **MUST** explicitly state what you are doing (e.g., "Movi
     *   **Instruction**: Process tickets one by one. Do not stop until **ALL** tickets are 'Done'.
     *   **Action**: Pick the highest priority ticket that is NOT 'Done'.
     *   **Delegation**: Spawn a Worker (Morty) to handle the entire implementation lifecycle for this ticket.
-    *   **Command**: `node "${extensionPath}/scripts/spawn_morty.js" --ticket-id <ID> --ticket-path <PATH> --timeout <worker_timeout_seconds> "<TASK_DESCRIPTION>"`
-    *   **Command (Windows)**: `node "${extensionPath}/scripts/spawn_morty.js" --ticket-id <ID> --ticket-path <PATH> --timeout <worker_timeout_seconds> "<TASK_DESCRIPTION>"`
+    *   **Command**: `node "${extensionPath}/extension/spawn_morty.js" --ticket-id <ID> --ticket-path <PATH> --timeout <worker_timeout_seconds> "<TASK_DESCRIPTION>"`
+    *   **Command (Windows)**: `node "${extensionPath}/extension/spawn_morty.js" --ticket-id <ID> --ticket-path <PATH> --timeout <worker_timeout_seconds> "<TASK_DESCRIPTION>"`
     *   **Validation**: IGNORE worker logs. DIRECTLY verify:
         1. `git status` (Check for file changes)
         2. `git diff` (Check code quality)
