@@ -1,3 +1,7 @@
+import { execSync, spawn } from 'child_process';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as os from 'os';
 export const Style = {
     GREEN: "\x1b[32m",
     RED: "\x1b[31m",
@@ -70,4 +74,59 @@ export function printBanner(text, colorName = "CYAN") {
     process.stdout.write(`\n${b}${c}${line}${r}\n`);
     process.stdout.write(`${b}${c}  ${text}${r}\n`);
     process.stdout.write(`${b}${c}${line}${r}\n\n`);
+}
+export function formatTime(seconds) {
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+    return `${m}m ${s}s`;
+}
+export function run_cmd(cmd, options = {}) {
+    const { cwd, check = true, capture = true } = options;
+    const command = Array.isArray(cmd) ? cmd.join(' ') : cmd;
+    try {
+        const stdout = execSync(command, {
+            cwd,
+            encoding: 'utf-8',
+            stdio: capture ? ['ignore', 'pipe', 'pipe'] : 'inherit'
+        });
+        return (stdout || '').trim();
+    }
+    catch (error) {
+        const err = error;
+        if (check)
+            throw new Error(`Command failed: ${command}\nError: ${err.stderr?.toString() || err.message}`);
+        return err.stdout?.toString().trim() || '';
+    }
+}
+export async function spawn_cmd(cmd, options = {}) {
+    return new Promise((resolve) => {
+        const proc = spawn(cmd[0], cmd.slice(1), {
+            cwd: options.cwd,
+            stdio: ['inherit', 'pipe', 'pipe'],
+            env: { ...process.env, PYTHONUNBUFFERED: "1" }
+        });
+        proc.stdout.on('data', (data) => options.onData?.(data.toString()));
+        proc.stderr.on('data', (data) => options.onData?.(data.toString()));
+        proc.on('close', (code) => {
+            resolve(code || 0);
+        });
+        proc.on('error', (err) => {
+            console.error(`Failed to start process: ${err}`);
+            resolve(1);
+        });
+    });
+}
+export function getSessionDir() {
+    try {
+        const extensionRoot = path.join(os.homedir(), ".gemini/extensions/pickle-rick");
+        const getSessionScript = path.join(extensionRoot, "scripts/get_session.sh");
+        if (fs.existsSync(getSessionScript)) {
+            const res = run_cmd(["bash", getSessionScript], { capture: true, check: false });
+            return res || null;
+        }
+    }
+    catch (e) {
+        // Ignore
+    }
+    return null;
 }

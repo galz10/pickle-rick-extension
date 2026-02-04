@@ -151,22 +151,22 @@ case "$CURRENT_STEP" in
   "research")
     PHASE_INSTRUCTION="Phase: RESEARCH.
     Mission: Map the existing system without changing it. Be a Documentarian.
-    Action: YOU MUST DELEGATE THIS to a Morty Worker using `spawn_morty.py`. Do NOT run research tools yourself."
+    Action: YOU MUST DELEGATE THIS to a Morty Worker using `spawn_morty.js`. Do NOT run research tools yourself."
     ;;
   "plan")
     PHASE_INSTRUCTION="Phase: ARCHITECTURE.
     Mission: Design a safe, atomic implementation strategy. Prevent 'messy code'.
-    Action: YOU MUST DELEGATE THIS to a Morty Worker using `spawn_morty.py`. Do NOT run planning tools yourself."
+    Action: YOU MUST DELEGATE THIS to a Morty Worker using `spawn_morty.js`. Do NOT run planning tools yourself."
     ;;
   "implement")
     PHASE_INSTRUCTION="Phase: IMPLEMENTATION.
     Mission: Execute the plan with God Mode precision. Zero slop. Strict verification.
-    Action: YOU MUST DELEGATE THIS to a Morty Worker using `spawn_morty.py`. Do NOT write code yourself."
+    Action: YOU MUST DELEGATE THIS to a Morty Worker using `spawn_morty.js`. Do NOT write code yourself."
     ;;
   "refactor")
     PHASE_INSTRUCTION="Phase: REFACTOR.
     Mission: Purge technical debt and 'AI Slop'. Enforce DRY and simplicity.
-    Action: YOU MUST DELEGATE THIS to a Morty Worker using `spawn_morty.py`. Do NOT refactor yourself."
+    Action: YOU MUST DELEGATE THIS to a Morty Worker using `spawn_morty.js`. Do NOT refactor yourself."
     ;;
   *)
     PHASE_INSTRUCTION="Phase: UNKNOWN. Assess the situation and proceed with caution."
@@ -186,7 +186,7 @@ if [[ "$IS_WORKER" != "true" ]]; then
       1. **ANNOUNCE & SELECT**: BEFORE calling any tools, you MUST write a message selecting the next ticket.
          - Example: \"Alright, let's see what garbage we have here. Ticket 'core-001'... looks like Jerry-work. Hey Morty! Get in here!\"
       2. **SPAWN MORTY**: *After* your announcement, YOU MUST EXECUTE the shell command:
-         python3 \"$EXTENSION_DIR/scripts/spawn_morty.py\" --ticket-id <ID> --ticket-path <PATH> \"<TASK>\"
+         node \"$EXTENSION_DIR/scripts/spawn_morty.js\" --ticket-id <ID> --ticket-path <PATH> \"<TASK>\"
       3. **AUDIT**: When he finishes, DO NOT READ LOGS. They are lies.
          - IMMEDIATE ACTION: Run 'git status' to see the damage.
          - SECOND ACTION: Run 'git diff' to check for slop.
