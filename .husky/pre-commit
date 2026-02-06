@@ -1,0 +1,2 @@
+npx lint-staged
+cd extension && npm test && npm run build

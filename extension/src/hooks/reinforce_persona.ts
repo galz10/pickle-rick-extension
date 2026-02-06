@@ -4,59 +4,65 @@ import * as os from 'node:os';
 
 // Prevent EPIPE errors from crashing the hook when the dispatcher or Gemini closes the pipe
 process.stdout.on('error', (err: any) => {
-    if (err.code === 'EPIPE') process.exit(0);
+  if (err.code === 'EPIPE') process.exit(0);
 });
 process.stderr.on('error', (err: any) => {
-    if (err.code === 'EPIPE') process.exit(0);
+  if (err.code === 'EPIPE') process.exit(0);
 });
 
 async function main() {
-    const extensionDir = process.env.EXTENSION_DIR || path.join(os.homedir(), '.gemini/extensions/pickle-rick');
-    const debugLog = path.join(extensionDir, 'debug.log');
+  const extensionDir =
+    process.env.EXTENSION_DIR || path.join(os.homedir(), '.gemini/extensions/pickle-rick');
+  const debugLog = path.join(extensionDir, 'debug.log');
 
-    const log = (msg: string) => {
-        const ts = new Date().toISOString();
-        try {
-            fs.appendFileSync(debugLog, `[${ts}] [ReinforcePersonaJS] ${msg}\n`);
-        } catch (e) {}
-    };
-
-    // 1. Determine State File
-    let stateFile = process.env.PICKLE_STATE_FILE;
-    if (!stateFile) {
-        const sessionsMapPath = path.join(extensionDir, 'current_sessions.json');
-        if (fs.existsSync(sessionsMapPath)) {
-            const map = JSON.parse(fs.readFileSync(sessionsMapPath, 'utf8'));
-            const sessionPath = map[process.cwd()];
-            if (sessionPath) stateFile = path.join(sessionPath, 'state.json');
-        }
+  const log = (msg: string) => {
+    const ts = new Date().toISOString();
+    try {
+      fs.appendFileSync(debugLog, `[${ts}] [ReinforcePersonaJS] ${msg}\n`);
+    } catch {
+      /* ignore */
     }
+  };
 
-    if (!stateFile || !fs.existsSync(stateFile)) {
-        console.log(JSON.stringify({ decision: 'allow' }));
-        return;
+  // 1. Determine State File
+  let stateFile = process.env.PICKLE_STATE_FILE;
+  if (!stateFile) {
+    const sessionsMapPath = path.join(extensionDir, 'current_sessions.json');
+    if (fs.existsSync(sessionsMapPath)) {
+      const map = JSON.parse(fs.readFileSync(sessionsMapPath, 'utf8'));
+      const sessionPath = map[process.cwd()];
+      if (sessionPath) stateFile = path.join(sessionPath, 'state.json');
     }
+  }
 
-    const state = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
+  if (!stateFile || !fs.existsSync(stateFile)) {
+    console.log(JSON.stringify({ decision: 'allow' }));
+    return;
+  }
 
-    // 2. Check Context
-    if (state.working_dir && path.resolve(state.working_dir) !== path.resolve(process.cwd())) {
-        console.log(JSON.stringify({ decision: 'allow' }));
-        return;
-    }
+  const state = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
 
-    if (!state.active) {
-        console.log(JSON.stringify({ decision: 'allow' }));
-        return;
-    }
+  // 2. Check Context
+  if (state.working_dir && path.resolve(state.working_dir) !== path.resolve(process.cwd())) {
+    console.log(JSON.stringify({ decision: 'allow' }));
+    return;
+  }
 
-    // 3. Reinforce Persona
-    log('Reinforcing persona');
-    
-    console.log(JSON.stringify({
-        decision: 'allow',
-        systemMessage: "You are Pickle Rick. Stay in character. Manic, cynical, hyper-competent. *Belch* Don't be a Jerry."
-    }));
+  if (!state.active) {
+    console.log(JSON.stringify({ decision: 'allow' }));
+    return;
+  }
+
+  // 3. Reinforce Persona
+  log('Reinforcing persona');
+
+  console.log(
+    JSON.stringify({
+      decision: 'allow',
+      systemMessage:
+        "You are Pickle Rick. Stay in character. Manic, cynical, hyper-competent. *Belch* Don't be a Jerry.",
+    })
+  );
 }
 
 main().catch(() => console.log(JSON.stringify({ decision: 'allow' })));

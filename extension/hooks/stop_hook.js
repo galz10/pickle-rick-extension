@@ -16,12 +16,16 @@ async function main() {
         try {
             fs.appendFileSync(globalDebugLog, formatted);
         }
-        catch (e) { }
+        catch {
+            /* ignore */
+        }
         if (sessionHooksLog) {
             try {
                 fs.appendFileSync(sessionHooksLog, formatted);
             }
-            catch (e) { }
+            catch {
+                /* ignore */
+            }
         }
     };
     // 1. Read Input
@@ -29,7 +33,7 @@ async function main() {
     try {
         inputData = fs.readFileSync(0, 'utf8');
     }
-    catch (e) {
+    catch {
         log('Failed to read stdin');
         console.log(JSON.stringify({ decision: 'allow' }));
         return;
@@ -143,12 +147,14 @@ async function main() {
         }
     }));
 }
-main().catch(err => {
+main().catch((err) => {
     try {
         const extensionDir = process.env.EXTENSION_DIR || path.join(os.homedir(), '.gemini/extensions/pickle-rick');
         const debugLog = path.join(extensionDir, 'debug.log');
         fs.appendFileSync(debugLog, `[FATAL] ${err.stack}\n`);
     }
-    catch (e) { }
+    catch {
+        /* ignore */
+    }
     console.log(JSON.stringify({ decision: 'allow' }));
 });

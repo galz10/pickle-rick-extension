@@ -4,17 +4,11 @@ import * as path from 'path';
 /**
  * Usage: node update_state.js <key> <value> <session_dir>
  */
-const [key, value, sessionDir] = process.argv.slice(2);
-if (!key || !value || !sessionDir) {
-    console.error("Usage: node update_state.js <key> <value> <session_dir>");
-    process.exit(1);
-}
-const statePath = path.join(sessionDir, "state.json");
-if (!fs.existsSync(statePath)) {
-    console.error(`Error: state.json not found at ${statePath}`);
-    process.exit(1);
-}
-try {
+export function updateState(key, value, sessionDir) {
+    const statePath = path.join(sessionDir, "state.json");
+    if (!fs.existsSync(statePath)) {
+        throw new Error(`state.json not found at ${statePath}`);
+    }
     const state = JSON.parse(fs.readFileSync(statePath, 'utf-8'));
     // Handle nested keys if needed (e.g. step, current_ticket)
     // For now, keep it simple for flat top-level keys
@@ -22,7 +16,17 @@ try {
     fs.writeFileSync(statePath, JSON.stringify(state, null, 2));
     console.log(`Successfully updated ${key} to ${value} in ${statePath}`);
 }
-catch (err) {
-    console.error(`Failed to update state: ${err.message}`);
-    process.exit(1);
+if (process.argv[1] && path.basename(process.argv[1]).startsWith('update_state')) {
+    const [key, value, sessionDir] = process.argv.slice(2);
+    if (!key || !value || !sessionDir) {
+        console.error("Usage: node update_state.js <key> <value> <session_dir>");
+        process.exit(1);
+    }
+    try {
+        updateState(key, value, sessionDir);
+    }
+    catch (err) {
+        console.error(`Failed to update state: ${err.message}`);
+        process.exit(1);
+    }
 }

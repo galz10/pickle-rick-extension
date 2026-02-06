@@ -6,6 +6,10 @@ process.stdout.on('error', (err) => {
     if (err.code === 'EPIPE')
         process.exit(0);
 });
+process.stderr.on('error', (err) => {
+    if (err.code === 'EPIPE')
+        process.exit(0);
+});
 async function main() {
     const extensionDir = process.env.EXTENSION_DIR || path.join(os.homedir(), '.gemini/extensions/pickle-rick');
     const globalDebugLog = path.join(extensionDir, 'debug.log');
@@ -16,12 +20,16 @@ async function main() {
         try {
             fs.appendFileSync(globalDebugLog, formatted);
         }
-        catch (e) { }
+        catch {
+            /* ignore */
+        }
         if (sessionHooksLog) {
             try {
                 fs.appendFileSync(sessionHooksLog, formatted);
             }
-            catch (e) { }
+            catch {
+                /* ignore */
+            }
         }
     };
     // 1. Determine State File
@@ -39,7 +47,6 @@ async function main() {
         console.log(JSON.stringify({ decision: 'allow' }));
         return;
     }
-    sessionHooksLog = path.join(path.dirname(stateFile), 'hooks.log');
     const state = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
     // 2. Check Context
     if (state.working_dir && path.resolve(state.working_dir) !== path.resolve(process.cwd())) {
@@ -50,6 +57,7 @@ async function main() {
         console.log(JSON.stringify({ decision: 'allow' }));
         return;
     }
+    sessionHooksLog = path.join(path.dirname(stateFile), 'hooks.log');
     // 3. Check Limits
     const now = Math.floor(Date.now() / 1000);
     const elapsedSeconds = now - state.start_time_epoch;

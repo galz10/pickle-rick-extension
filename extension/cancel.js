@@ -4,13 +4,13 @@ import * as path from 'path';
 import * as os from 'os';
 import { printMinimalPanel } from './pickle_utils.js';
 const SESSIONS_MAP = path.join(os.homedir(), ".gemini/extensions/pickle-rick/current_sessions.json");
-function main() {
+export function cancelSession(cwd) {
     if (!fs.existsSync(SESSIONS_MAP)) {
         console.log("No active sessions map found.");
         return;
     }
     const map = JSON.parse(fs.readFileSync(SESSIONS_MAP, 'utf-8'));
-    const sessionPath = map[process.cwd()];
+    const sessionPath = map[cwd];
     if (!sessionPath || !fs.existsSync(sessionPath)) {
         console.log("No active session found for this directory.");
         return;
@@ -28,4 +28,6 @@ function main() {
         Status: "Inactive"
     }, "RED", "🛑");
 }
-main();
+if (process.argv[1] && path.basename(process.argv[1]).startsWith('cancel')) {
+    cancelSession(process.cwd());
+}

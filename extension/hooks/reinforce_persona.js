@@ -6,13 +6,21 @@ process.stdout.on('error', (err) => {
     if (err.code === 'EPIPE')
         process.exit(0);
 });
+process.stderr.on('error', (err) => {
+    if (err.code === 'EPIPE')
+        process.exit(0);
+});
 async function main() {
     const extensionDir = process.env.EXTENSION_DIR || path.join(os.homedir(), '.gemini/extensions/pickle-rick');
     const debugLog = path.join(extensionDir, 'debug.log');
     const log = (msg) => {
         const ts = new Date().toISOString();
-        fs.appendFileSync(debugLog, `[${ts}] [ReinforcePersonaJS] ${msg}
-`);
+        try {
+            fs.appendFileSync(debugLog, `[${ts}] [ReinforcePersonaJS] ${msg}\n`);
+        }
+        catch {
+            /* ignore */
+        }
     };
     // 1. Determine State File
     let stateFile = process.env.PICKLE_STATE_FILE;
