@@ -55,15 +55,19 @@ Between each step, you **MUST** explicitly state what you are doing (e.g., "Movi
     *   **FORBIDDEN SKILLS**: Do NOT use `code-researcher`, `implementation-planner`, or `code-implementer` directly in this phase.
     *   **Instruction**: Process tickets one by one. Do not stop until **ALL** tickets are 'Done'.
     *   **Action**: Pick the highest priority ticket that is NOT 'Done'.
-    *   **Delegation**: Spawn a Worker (Morty) to handle the entire implementation lifecycle for this ticket.
-    *   **Command**: `node "${extensionPath}/extension/spawn_morty.js" --ticket-id <ID> --ticket-path <PATH> --timeout <worker_timeout_seconds> "<TASK_DESCRIPTION>"`
+    *   **Delegation**: Spawn a Worker (Morty) to handle the implementation lifecycle for this ticket.
+    *   **CRITICAL (Isolation & Handoff)**: You MUST spawn a Morty for **EVERY** ticket. To prevent scope creep and "Mega-Morty" scenarios, the script will inject the specific ticket content into the worker prompt.
+    *   **Command**: `node "${extensionPath}/extension/spawn_morty.js" --ticket-id <ID> --ticket-path "${SESSION_ROOT}/<ID>/" --ticket-file "${SESSION_ROOT}/<ID>/linear_ticket_<ID>.md" --timeout <worker_timeout_seconds> "<TASK_DESCRIPTION>"`
+    *   **Validation**: After the Morty outputs `<promise>I AM DONE</promise>`, you MUST audit the results. Check that he ONLY modified files related to THIS ticket.
     *   **Command (Windows)**: `node "${extensionPath}/extension/spawn_morty.js" --ticket-id <ID> --ticket-path <PATH> --timeout <worker_timeout_seconds> "<TASK_DESCRIPTION>"`
     *   **Validation**: IGNORE worker logs. DIRECTLY verify:
-        1. `git status` (Check for file changes)
-        2. `git diff` (Check code quality)
+        1. **Lifecycle Audit**: Check `${SESSION_ROOT}/[ticket_id]/` for mandatory docs: `research_*.md`, `research_review.md`, `plan_*.md`, `plan_review.md`. 
+           **FORBIDDEN**: Do NOT mark a ticket as Done if these documents are missing.
+        2. `git status` & `git diff` (Verify implementation matches the plan)
         3. Run tests/build (Check functionality)
     *   **Cleanup**: If validation fails, REVERT changes (`git reset --hard`). If it passes, COMMIT changes.
     *   **Next Ticket**: Pick the next ticket and repeat.
+    *   **FORBIDDEN**: You are strictly FORBIDDEN from deactivating the loop or declaring "Epic Done" if any tickets are still `Todo` or missing lifecycle documentation.
 
 **Loop Constraints:**
 - **Iteration Count**: Monitor `"iteration"` in `state.json`. If `"max_iterations"` (if > 0) is reached, you must stop.

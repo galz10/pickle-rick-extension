@@ -53,7 +53,7 @@ You can watch Pickle Rick's "thoughts" in real-time, but to see the *real* codin
 
 **Watch the Manager (Rick):**
 ```bash
-SESSION_DIR=$(~/.gemini/extensions/pickle-rick/scripts/get_session.sh)
+SESSION_DIR=$(node ~/.gemini/extensions/pickle-rick/extension/get_session.js)
 tail -f "$SESSION_DIR/state.json"
 ```
 

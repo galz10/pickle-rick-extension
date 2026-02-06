@@ -3,7 +3,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 import { run_cmd, Style } from './pickle_utils.js';
-function getBranch(repoPath) {
+
+function getBranch(repoPath: string): string {
     try {
         return run_cmd(["git", "rev-parse", "--abbrev-ref", "HEAD"], { cwd: repoPath, capture: true }).trim();
     }
@@ -11,7 +12,8 @@ function getBranch(repoPath) {
         return "unknown";
     }
 }
-export function addToJar(sessionDir) {
+
+export function addToJar(sessionDir: string): string {
     // 1. Read state.json
     const statePath = path.join(sessionDir, "state.json");
     if (!fs.existsSync(statePath)) {
@@ -23,19 +25,23 @@ export function addToJar(sessionDir) {
         throw new Error("working_dir not found in state.json");
     }
     const branch = getBranch(repoPath);
+
     // 2. Check for prd.md
     const prdSrc = path.join(sessionDir, "prd.md");
     if (!fs.existsSync(prdSrc)) {
         throw new Error(`prd.md not found in ${sessionDir}`);
     }
+
     // 3. Setup Jar storage
     const today = new Date().toISOString().split('T')[0];
     const sessionId = path.basename(sessionDir);
     const jarRoot = path.join(os.homedir(), ".gemini/extensions/pickle-rick/jar");
     const taskDir = path.join(jarRoot, today, sessionId);
     fs.mkdirSync(taskDir, { recursive: true });
+
     // 4. Copy PRD
     fs.copyFileSync(prdSrc, path.join(taskDir, "prd.md"));
+
     // 5. Write meta.json
     const meta = {
         repo_path: repoPath,
@@ -46,12 +52,15 @@ export function addToJar(sessionDir) {
         status: "marinating"
     };
     fs.writeFileSync(path.join(taskDir, "meta.json"), JSON.stringify(meta, null, 2));
+
     // 6. Deactivate the current session to prevent immediate execution
     state.active = false;
     state.completion_promise = "JARRED"; // Signal completion
     fs.writeFileSync(statePath, JSON.stringify(state, null, 2));
+
     return taskDir;
 }
+
 // CLI Support
 if (process.argv[1] && path.basename(process.argv[1]).startsWith('jar_utils')) {
     const args = process.argv.slice(2);
@@ -65,7 +74,7 @@ if (process.argv[1] && path.basename(process.argv[1]).startsWith('jar_utils')) {
         const resultPath = addToJar(sessionDir);
         console.log(`Task successfully jarred at: ${resultPath}`);
     }
-    catch (err) {
+    catch (err: any) {
         console.error(`${Style.RED}Error: ${err.message}${Style.RESET}`);
         process.exit(1);
     }

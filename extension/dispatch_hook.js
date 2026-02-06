@@ -7,6 +7,13 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const EXTENSION_DIR = resolve(__dirname, '..');
 const HOOKS_DIR = join(EXTENSION_DIR, 'hooks');
 const LOG_PATH = join(EXTENSION_DIR, 'debug.log');
+// Prevent EPIPE errors from crashing the dispatcher when Gemini closes the pipe
+const handleEpipe = (err) => {
+    if (err.code === 'EPIPE')
+        process.exit(0);
+};
+process.stdout.on('error', handleEpipe);
+process.stderr.on('error', handleEpipe);
 function logError(message) {
     console.error(`Dispatcher Error: ${message}`);
     try {
@@ -43,7 +50,13 @@ async function main() {
     let scriptPath;
     let cmd;
     let cmdArgs;
-    if (isWindows) {
+    const jsPath = join(HOOKS_DIR, `${hookName}.js`);
+    if (existsSync(jsPath)) {
+        scriptPath = jsPath;
+        cmd = 'node';
+        cmdArgs = [scriptPath, ...extraArgs];
+    }
+    else if (isWindows) {
         scriptPath = join(HOOKS_DIR, `${hookName}.ps1`);
         const exe = findExecutable('pwsh') || findExecutable('powershell');
         if (!exe) {
@@ -80,8 +93,22 @@ async function main() {
             env: { ...process.env, EXTENSION_DIR },
             stdio: ['pipe', 'pipe', 'pipe']
         });
-        if (inputData)
-            child.stdin?.write(inputData);
+        child.stdin?.on('error', (err) => {
+            if (err.code === 'EPIPE') {
+                // Ignore EPIPE on stdin
+                return;
+            }
+            logError(`Child stdin error: ${err}`);
+        });
+        if (inputData) {
+            try {
+                child.stdin?.write(inputData);
+            }
+            catch (err) {
+                if (err.code !== 'EPIPE')
+                    throw err;
+            }
+        }
         child.stdin?.end();
         let stdout = '';
         let stderr = '';

@@ -2,13 +2,16 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { run_cmd, Style } from './pickle_utils.js';
-export function createPR(sessionDir) {
+
+export function createPR(sessionDir: string): string {
     const statePath = path.join(sessionDir, "state.json");
     if (!fs.existsSync(statePath)) {
         throw new Error("state.json not found");
     }
+
     const state = JSON.parse(fs.readFileSync(statePath, 'utf-8'));
     const repoPath = state.working_dir;
+
     // Use git_utils or raw git
     const branch = run_cmd(["git", "rev-parse", "--abbrev-ref", "HEAD"], { cwd: repoPath }).trim();
     const title = `Pickle Rick: ${state.original_prompt.slice(0, 50)}...`;
@@ -16,14 +19,15 @@ export function createPR(sessionDir) {
     
 Session: ${path.basename(sessionDir)}
 Prompt: ${state.original_prompt}`;
+
     try {
         const output = run_cmd(["gh", "pr", "create", "--title", title, "--body", body], { cwd: repoPath });
         return output.trim();
-    }
-    catch (err) {
+    } catch (err: any) {
         throw new Error(`Failed to create PR: ${err.message}`);
     }
 }
+
 // CLI
 if (process.argv[1] && path.basename(process.argv[1]).startsWith('pr_factory')) {
     const sessionDir = process.argv[2];
@@ -31,11 +35,11 @@ if (process.argv[1] && path.basename(process.argv[1]).startsWith('pr_factory')) 
         console.error("Usage: node pr_factory.js <session_dir>");
         process.exit(1);
     }
+
     try {
         const url = createPR(sessionDir);
         console.log(`${Style.GREEN}PR Created: ${url}${Style.RESET}`);
-    }
-    catch (err) {
+    } catch (err: any) {
         console.error(`${Style.RED}Error: ${err.message}${Style.RESET}`);
         process.exit(1);
     }

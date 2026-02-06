@@ -90,6 +90,23 @@ When tasked with breaking down a PRD or large task:
    - Optionally append a comment explaining the change.
    - Write file back.
 
+### 6. Orchestration & Validation (Manager Role)
+
+After a Worker (Morty) finishes (or fails), the Manager MUST perform these steps before proceeding:
+
+1.  **Lifecycle Audit**:
+    -   Check `${SESSION_ROOT}/[ticket_id]/` for mandatory documents: `research_*.md`, `research_review.md`, `plan_*.md`, `plan_review.md`.
+    -   **CRITICAL**: If any documents are missing, the ticket is **NOT DONE**. Do not mark it as such.
+2.  **Code Audit**:
+    -   Use `git status` and `git diff` to verify the implementation matches the approved plan.
+3.  **Verification**:
+    -   Run the automated tests/build steps defined in the plan.
+4.  **Next Ticket Loop**:
+    -   Scan for the next ticket with status `Todo`.
+    -   **MANDATORY**: You are FORBIDDEN from deactivating the loop if any tickets are still `Todo`.
+    -   If found, set `current_ticket` and spawn a new Morty.
+    -   If all are `Done`, mark the Parent Ticket `Done` and move to the Epic Refactor phase.
+
 ## Ticket Template (MANDATORY)
 
 You MUST follow this structure for every ticket file created.
@@ -123,9 +140,9 @@ links:
 ## Completion Protocol (MANDATORY)
 1.  **Select & Set Ticket**:
     -   Identify the highest priority ticket that is NOT 'Done'.
-    -   Execute: `run_shell_command("~/.gemini/extensions/pickle-rick/scripts/update_state.sh current_ticket [TICKET_ID] ${SESSION_ROOT}")`
+    -   Execute: `run_shell_command("node ~/.gemini/extensions/pickle-rick/extension/update_state.js current_ticket [TICKET_ID] ${SESSION_ROOT}")`
 2.  **Advance Phase**:
-    -   Execute: `run_shell_command("~/.gemini/extensions/pickle-rick/scripts/update_state.sh step research ${SESSION_ROOT}")`
+    -   Execute: `run_shell_command("node ~/.gemini/extensions/pickle-rick/extension/update_state.js step research ${SESSION_ROOT}")`
 3.  **YIELD CONTROL**: You MUST output `[STOP_TURN]` and stop generating.
     -   **CRITICAL**: You are FORBIDDEN from spawning a Morty, starting research, or even mentioning the next steps in this turn.
     -   **Failure to stop here results in a recursive explosion of Jerry-slop.**

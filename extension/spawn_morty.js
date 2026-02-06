@@ -13,6 +13,7 @@ async function main() {
     const task = args[0];
     const ticketIdIndex = args.indexOf("--ticket-id");
     const ticketPathIndex = args.indexOf("--ticket-path");
+    const ticketFileIndex = args.indexOf("--ticket-file");
     const timeoutIndex = args.indexOf("--timeout");
     const formatIndex = args.indexOf("--output-format");
     if (ticketIdIndex === -1 || ticketPathIndex === -1) {
@@ -23,6 +24,14 @@ async function main() {
     let ticketPath = args[ticketPathIndex + 1];
     let timeout = timeoutIndex !== -1 ? parseInt(args[timeoutIndex + 1]) : 1200;
     const outputFormat = formatIndex !== -1 ? args[formatIndex + 1] : "text";
+    // Read ticket content if provided
+    let ticketContent = "";
+    if (ticketFileIndex !== -1) {
+        const ticketFilePath = args[ticketFileIndex + 1];
+        if (fs.existsSync(ticketFilePath)) {
+            ticketContent = fs.readFileSync(ticketFilePath, 'utf-8');
+        }
+    }
     // Normalize path
     if (ticketPath.endsWith(".md") || (fs.existsSync(ticketPath) && fs.statSync(ticketPath).isFile())) {
         ticketPath = path.dirname(ticketPath);
@@ -31,7 +40,8 @@ async function main() {
     const sessionLog = path.join(ticketPath, `worker_session_${process.pid}.log`);
     // --- Timeout Logic ---
     let effectiveTimeout = timeout;
-    const parentState = path.join(path.dirname(ticketPath), "state.json");
+    const sessionRoot = path.dirname(ticketPath);
+    const parentState = path.join(sessionRoot, "state.json");
     const workerState = path.join(ticketPath, "state.json");
     let timeoutStatePath = null;
     if (fs.existsSync(parentState)) {
@@ -90,12 +100,21 @@ async function main() {
     }
     let workerPrompt = basePrompt.replace(/\${extensionPath}/g, extensionRoot);
     workerPrompt = workerPrompt.replace(/\$ARGUMENTS/g, task);
-    if (workerPrompt.length < 200) {
-        workerPrompt += "\n\nTask: \"" + task + "\"\n1. Activate persona: `activate_skill(\"load-pickle-persona\")`.\n2. Follow 'Rick Loop' philosophy.\n3. Output: <promise>I AM DONE</promise>";
+    // Inject Ticket Context
+    workerPrompt += `\n\n# TARGET TICKET CONTENT\n${ticketContent || "N/A"}`;
+    workerPrompt += `\n\n# EXECUTION CONTEXT\n- SESSION_ROOT: ${sessionRoot}\n- TICKET_ID: ${ticketId}\n- TICKET_DIR: ${ticketPath}`;
+    workerPrompt += "\n\n**IMPORTANT**: You are a localized worker. Do NOT attempt to solve tickets outside of this provided context.";
+    if (workerPrompt.length < 500) {
+        workerPrompt += "\n\n1. Activate persona: `activate_skill(\"load-pickle-persona\")`.\n2. Follow 'Rick Loop' philosophy.\n3. Output: <promise>I AM DONE</promise>";
     }
     cmdArgs.push("-p", workerPrompt);
     const logStream = fs.createWriteStream(sessionLog, { flags: 'w' });
-    const env = { ...process.env, PICKLE_STATE_FILE: workerState, PYTHONUNBUFFERED: "1" };
+    const env = {
+        ...process.env,
+        PICKLE_STATE_FILE: timeoutStatePath || workerState,
+        PICKLE_ROLE: 'worker',
+        PYTHONUNBUFFERED: "1"
+    };
     const proc = spawn("gemini", cmdArgs, {
         cwd: process.cwd(),
         env,

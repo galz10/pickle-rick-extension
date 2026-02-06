@@ -105,7 +105,7 @@ async function main() {
         const state = JSON.parse(fs.readFileSync(statePath, 'utf-8'));
         state.active = !pausedMode;
         if (resetMode) {
-            state.iteration = 1;
+            state.iteration = 0;
             state.start_time_epoch = startEpoch;
         }
         // Update state with new limits if provided
@@ -115,7 +115,7 @@ async function main() {
         if (promiseToken)
             state.completion_promise = promiseToken;
         fs.writeFileSync(statePath, JSON.stringify(state, null, 2));
-        currentIteration = state.iteration;
+        currentIteration = state.iteration + 1;
         promiseToken = state.completion_promise;
         fullSessionPath = state.session_dir; // Use stored path
     }
@@ -132,7 +132,7 @@ async function main() {
             active: !pausedMode,
             working_dir: process.cwd(),
             step: "prd",
-            iteration: 1,
+            iteration: 0,
             max_iterations: loopLimit,
             max_time_minutes: timeLimit,
             worker_timeout_seconds: workerTimeout,

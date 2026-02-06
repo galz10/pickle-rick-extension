@@ -1,8 +1,7 @@
 import { execSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as os from 'os';
-import { printMinimalPanel } from './pickle_utils.js';
+import { Style } from './pickle_utils.js';
 function run_cmd(cmd, options = {}) {
     const { cwd, check = true } = options;
     const command = Array.isArray(cmd) ? cmd.join(' ') : cmd;
@@ -11,8 +10,7 @@ function run_cmd(cmd, options = {}) {
     }
     catch (error) {
         if (check)
-            throw new Error(`Command failed: ${command}
-Error: ${error.stderr?.toString() || error.message}`);
+            throw new Error(`Command failed: ${command}\nError: ${error.stderr?.toString() || error.message}`);
         return error.stdout?.toString().trim() || '';
     }
 }
@@ -38,36 +36,56 @@ export function get_branch_name(task_id) {
     const type = ["fix", "bug", "patch", "issue"].some(x => lowerId.includes(x)) ? "fix" : "feat";
     return `${user}/${type}/${task_id}`;
 }
-export function create_worktree(repo_path, base_branch, task_id) {
-    const worktree_root = path.join(os.homedir(), ".gemini/extensions/pickle-rick/worktrees");
-    if (!fs.existsSync(worktree_root))
-        fs.mkdirSync(worktree_root, { recursive: true });
-    const worktree_path = path.join(worktree_root, `worktree-${task_id}`);
-    const new_branch = get_branch_name(task_id);
-    if (fs.existsSync(worktree_path)) {
-        printMinimalPanel("Cleanup", { path: worktree_path }, "YELLOW", "🧹");
-        try {
-            run_git(["worktree", "remove", "--force", worktree_path], undefined, false);
+export function update_ticket_status(ticket_id, new_status, session_dir) {
+    // 1. Find the ticket file
+    // Search recursively in the session directory
+    const find_ticket = (dir) => {
+        const files = fs.readdirSync(dir);
+        for (const file of files) {
+            const fullPath = path.join(dir, file);
+            const stat = fs.statSync(fullPath);
+            if (stat.isDirectory()) {
+                const res = find_ticket(fullPath);
+                if (res)
+                    return res;
+            }
+            else if (file === `linear_ticket_${ticket_id}.md`) {
+                return fullPath;
+            }
         }
-        catch { }
-        if (fs.existsSync(worktree_path)) {
-            fs.rmSync(worktree_path, { recursive: true, force: true });
-            run_git(["worktree", "prune"], undefined, false);
-        }
+        return null;
+    };
+    const ticket_path = find_ticket(session_dir);
+    if (!ticket_path) {
+        throw new Error(`Ticket linear_ticket_${ticket_id}.md not found in ${session_dir}`);
     }
-    try {
-        run_git(["branch", "-D", new_branch], repo_path, false);
-    }
-    catch { }
-    printMinimalPanel("Creating Worktree", { path: worktree_path, branch: new_branch, base: base_branch }, "GREEN", "🥒");
-    run_git(["worktree", "add", "-b", new_branch, worktree_path, base_branch], repo_path);
-    return worktree_path;
+    // 2. Read and update the frontmatter
+    let content = fs.readFileSync(ticket_path, 'utf-8');
+    const today = new Date().toISOString().split('T')[0];
+    // Update status and updated date
+    content = content.replace(/^status:.*$/m, `status: "${new_status}"`);
+    content = content.replace(/^updated:.*$/m, `updated: "${today}"`);
+    fs.writeFileSync(ticket_path, content);
+    console.log(`Successfully updated ticket ${ticket_id} to status "${new_status}"`);
 }
-export function remove_worktree(worktree_path) {
-    printMinimalPanel("Removing Worktree", { path: worktree_path }, "CYAN", "🗑️");
-    try {
-        run_git(["worktree", "remove", "--force", worktree_path], undefined, false);
+// CLI Interface
+if (process.argv[1] && path.basename(process.argv[1]).includes('git_utils')) {
+    const args = process.argv.slice(2);
+    if (args.includes('--update-status')) {
+        const idIdx = args.indexOf('--update-status') + 1;
+        const ticketId = args[idIdx];
+        const status = args[idIdx + 1];
+        const sessionDir = args[idIdx + 2];
+        if (!ticketId || !status || !sessionDir) {
+            console.error("Usage: node git_utils.js --update-status <id> <status> <session_dir>");
+            process.exit(1);
+        }
+        try {
+            update_ticket_status(ticketId, status, sessionDir);
+        }
+        catch (err) {
+            console.error(`${Style.RED}Error: ${err.message}${Style.RESET}`);
+            process.exit(1);
+        }
     }
-    catch { }
-    run_git(["worktree", "prune"], undefined, false);
 }

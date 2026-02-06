@@ -19,6 +19,10 @@ Execute the **CURRENT ACTIVE PHASE** (Research, Plan, Review, Implement, or Refa
 
 ## Workflow (THE STOP PROTOCOL)
 
+### 0. Announce Ticket
+**MANDATORY**: At the very beginning of your response, you MUST restate the ticket you are working on:
+"Uh, okay Rick, I'm-I'm working on ticket [ID]: [Title]."
+
 ### 1. Identify Phase
 Check the current ticket directory `${SESSION_ROOT}/[ticket_id]` to determine the active phase. You MUST stop after completing the identified phase.
 
