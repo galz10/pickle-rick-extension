@@ -112,7 +112,7 @@ Once you have sufficient information, draft the PRD using the template below.
 ```
 
 ## Completion Protocol (MANDATORY)
-1.  **Advance Phase**: Execute `run_shell_command("node ~/.gemini/extensions/pickle-rick/extension/update_state.js step breakdown ${SESSION_ROOT}")`.
+1.  **Advance Phase**: Execute `run_shell_command("node ~/.gemini/extensions/pickle-rick/extension/bin/update-state.js step breakdown ${SESSION_ROOT}")`.
 2.  **YIELD CONTROL**: You MUST output `[STOP_TURN]` and stop generating.
     -   **CRITICAL**: You are FORBIDDEN from starting the breakdown phase, mentioning tickets, or continuing.
     -   The **Pickle Rick Manager** (in a new iteration) will handle the breakdown phase.

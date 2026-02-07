@@ -9,8 +9,7 @@
     "test:coverage": "vitest run --coverage",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
-    "format": "prettier --write 'src/**/*.ts'",
-    "prepare": "husky"
+    "format": "prettier --write 'src/**/*.ts'"
   },
   "lint-staged": {
     "src/**/*.ts": [

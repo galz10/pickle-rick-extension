@@ -140,9 +140,9 @@ links:
 ## Completion Protocol (MANDATORY)
 1.  **Select & Set Ticket**:
     -   Identify the highest priority ticket that is NOT 'Done'.
-    -   Execute: `run_shell_command("node ~/.gemini/extensions/pickle-rick/extension/update_state.js current_ticket [TICKET_ID] ${SESSION_ROOT}")`
+    -   Execute: `run_shell_command("node ~/.gemini/extensions/pickle-rick/extension/bin/update-state.js current_ticket [TICKET_ID] ${SESSION_ROOT}")`
 2.  **Advance Phase**:
-    -   Execute: `run_shell_command("node ~/.gemini/extensions/pickle-rick/extension/update_state.js step research ${SESSION_ROOT}")`
+    -   Execute: `run_shell_command("node ~/.gemini/extensions/pickle-rick/extension/bin/update-state.js step research ${SESSION_ROOT}")`
 3.  **YIELD CONTROL**: You MUST output `[STOP_TURN]` and stop generating.
     -   **CRITICAL**: You are FORBIDDEN from spawning a Morty, starting research, or even mentioning the next steps in this turn.
     -   **Failure to stop here results in a recursive explosion of Jerry-slop.**

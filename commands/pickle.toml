@@ -19,11 +19,11 @@ You **MUST** output a text explanation ("brain dump") *before* every single tool
 **Step 1: Initialization**
 Run the setup script to initialize the loop state:
 ```bash
-node "${extensionPath}/extension/setup.js" $ARGUMENTS
+node "${extensionPath}/extension/bin/setup.js" $ARGUMENTS
 ```
 **Windows (PowerShell):**
 ```powershell
-node "${extensionPath}/extension/setup.js" $ARGUMENTS
+node "${extensionPath}/extension/bin/setup.js" $ARGUMENTS
 ```
 **Supported Arguments for setup.sh:**
 - `--max-iterations <N>`: Maximum number of loop iterations.
@@ -57,9 +57,9 @@ Between each step, you **MUST** explicitly state what you are doing (e.g., "Movi
     *   **Action**: Pick the highest priority ticket that is NOT 'Done'.
     *   **Delegation**: Spawn a Worker (Morty) to handle the implementation lifecycle for this ticket.
     *   **CRITICAL (Isolation & Handoff)**: You MUST spawn a Morty for **EVERY** ticket. To prevent scope creep and "Mega-Morty" scenarios, the script will inject the specific ticket content into the worker prompt.
-    *   **Command**: `node "${extensionPath}/extension/spawn_morty.js" --ticket-id <ID> --ticket-path "${SESSION_ROOT}/<ID>/" --ticket-file "${SESSION_ROOT}/<ID>/linear_ticket_<ID>.md" --timeout <worker_timeout_seconds> "<TASK_DESCRIPTION>"`
+    *   **Command**: `node "${extensionPath}/extension/bin/spawn-morty.js" --ticket-id <ID> --ticket-path "${SESSION_ROOT}/<ID>/" --ticket-file "${SESSION_ROOT}/<ID>/linear_ticket_<ID>.md" --timeout <worker_timeout_seconds> "<TASK_DESCRIPTION>"`
     *   **Validation**: After the Morty outputs `<promise>I AM DONE</promise>`, you MUST audit the results. Check that he ONLY modified files related to THIS ticket.
-    *   **Command (Windows)**: `node "${extensionPath}/extension/spawn_morty.js" --ticket-id <ID> --ticket-path <PATH> --timeout <worker_timeout_seconds> "<TASK_DESCRIPTION>"`
+    *   **Command (Windows)**: `node "${extensionPath}/extension/bin/spawn-morty.js" --ticket-id <ID> --ticket-path <PATH> --timeout <worker_timeout_seconds> "<TASK_DESCRIPTION>"`
     *   **Validation**: IGNORE worker logs. DIRECTLY verify:
         1. **Lifecycle Audit**: Check `${SESSION_ROOT}/[ticket_id]/` for mandatory docs: `research_*.md`, `research_review.md`, `plan_*.md`, `plan_review.md`. 
            **FORBIDDEN**: Do NOT mark a ticket as Done if these documents are missing.
