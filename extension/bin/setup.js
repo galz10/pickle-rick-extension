@@ -4,11 +4,11 @@ import * as path from 'path';
 import * as os from 'os';
 import * as crypto from 'node:crypto';
 import { printMinimalPanel, Style } from '../services/pickle-utils.js';
-const ROOT_DIR = path.join(os.homedir(), ".gemini/extensions/pickle-rick");
-const SESSIONS_ROOT = path.join(ROOT_DIR, "sessions");
-const JAR_ROOT = path.join(ROOT_DIR, "jar");
-const WORKTREES_ROOT = path.join(ROOT_DIR, "worktrees");
-const SESSIONS_MAP = path.join(ROOT_DIR, "current_sessions.json");
+const ROOT_DIR = path.join(os.homedir(), '.gemini/extensions/pickle-rick');
+const SESSIONS_ROOT = path.join(ROOT_DIR, 'sessions');
+const JAR_ROOT = path.join(ROOT_DIR, 'jar');
+const WORKTREES_ROOT = path.join(ROOT_DIR, 'worktrees');
+const SESSIONS_MAP = path.join(ROOT_DIR, 'current_sessions.json');
 function die(message) {
     console.error(`${Style.RED}❌ Error: ${message}${Style.RESET}`);
     process.exit(1);
@@ -19,14 +19,16 @@ function updateSessionMap(cwd, sessionPath) {
         try {
             map = JSON.parse(fs.readFileSync(SESSIONS_MAP, 'utf-8'));
         }
-        catch { /* ignore */ }
+        catch {
+            /* ignore */
+        }
     }
     map[cwd] = sessionPath;
     fs.writeFileSync(SESSIONS_MAP, JSON.stringify(map, null, 2));
 }
 async function main() {
     // Ensure core directories exist
-    [SESSIONS_ROOT, JAR_ROOT, WORKTREES_ROOT].forEach(dir => {
+    [SESSIONS_ROOT, JAR_ROOT, WORKTREES_ROOT].forEach((dir) => {
         if (!fs.existsSync(dir))
             fs.mkdirSync(dir, { recursive: true });
     });
@@ -39,10 +41,10 @@ async function main() {
     let resumePath = null;
     let resetMode = false;
     let pausedMode = false;
-    let taskArgs = [];
+    const taskArgs = [];
     const startEpoch = Math.floor(Date.now() / 1000);
     // Load Settings
-    const settingsFile = path.join(ROOT_DIR, "pickle_settings.json");
+    const settingsFile = path.join(ROOT_DIR, 'pickle_settings.json');
     if (fs.existsSync(settingsFile)) {
         try {
             const settings = JSON.parse(fs.readFileSync(settingsFile, 'utf-8'));
@@ -53,42 +55,44 @@ async function main() {
             if (settings.default_worker_timeout_seconds)
                 workerTimeout = settings.default_worker_timeout_seconds;
         }
-        catch { /* ignore */ }
+        catch {
+            /* ignore */
+        }
     }
     // Argument Parser
     const args = process.argv.slice(2);
     for (let i = 0; i < args.length; i++) {
         const arg = args[i];
-        if (arg === "--max-iterations") {
+        if (arg === '--max-iterations') {
             loopLimit = parseInt(args[++i]);
         }
-        else if (arg === "--max-time") {
+        else if (arg === '--max-time') {
             timeLimit = parseInt(args[++i]);
         }
-        else if (arg === "--worker-timeout") {
+        else if (arg === '--worker-timeout') {
             workerTimeout = parseInt(args[++i]);
         }
-        else if (arg === "--completion-promise") {
+        else if (arg === '--completion-promise') {
             promiseToken = args[++i];
         }
-        else if (arg === "--resume") {
+        else if (arg === '--resume') {
             resumeMode = true;
-            if (args[i + 1] && !args[i + 1].startsWith("--")) {
+            if (args[i + 1] && !args[i + 1].startsWith('--')) {
                 resumePath = args[++i];
             }
         }
-        else if (arg === "--reset") {
+        else if (arg === '--reset') {
             resetMode = true;
         }
-        else if (arg === "--paused") {
+        else if (arg === '--paused') {
             pausedMode = true;
         }
         else {
             taskArgs.push(arg);
         }
     }
-    const taskStr = taskArgs.join(" ");
-    let fullSessionPath = "";
+    const taskStr = taskArgs.join(' ');
+    let fullSessionPath = '';
     let currentIteration = 1;
     if (resumeMode) {
         if (resumePath) {
@@ -96,12 +100,12 @@ async function main() {
         }
         else if (fs.existsSync(SESSIONS_MAP)) {
             const map = JSON.parse(fs.readFileSync(SESSIONS_MAP, 'utf-8'));
-            fullSessionPath = map[process.cwd()] || "";
+            fullSessionPath = map[process.cwd()] || '';
         }
         if (!fullSessionPath || !fs.existsSync(fullSessionPath)) {
             die(`No active session found or path invalid: ${fullSessionPath}`);
         }
-        const statePath = path.join(fullSessionPath, "state.json");
+        const statePath = path.join(fullSessionPath, 'state.json');
         const state = JSON.parse(fs.readFileSync(statePath, 'utf-8'));
         state.active = !pausedMode;
         if (resetMode) {
@@ -121,7 +125,7 @@ async function main() {
     }
     else {
         if (!taskStr)
-            die("No task specified. Run /pickle --help for usage.");
+            die('No task specified. Run /pickle --help for usage.');
         const today = new Date().toISOString().split('T')[0];
         const hash = crypto.randomBytes(4).toString('hex');
         const sessionId = `${today}-${hash}`;
@@ -131,7 +135,7 @@ async function main() {
         const state = {
             active: !pausedMode,
             working_dir: process.cwd(),
-            step: "prd",
+            step: 'prd',
             iteration: 0,
             max_iterations: loopLimit,
             max_time_minutes: timeLimit,
@@ -142,19 +146,19 @@ async function main() {
             current_ticket: null,
             history: [],
             started_at: new Date().toISOString(),
-            session_dir: fullSessionPath
+            session_dir: fullSessionPath,
         };
-        fs.writeFileSync(path.join(fullSessionPath, "state.json"), JSON.stringify(state, null, 2));
+        fs.writeFileSync(path.join(fullSessionPath, 'state.json'), JSON.stringify(state, null, 2));
     }
     updateSessionMap(process.cwd(), fullSessionPath);
-    printMinimalPanel("Pickle Rick Activated!", {
+    printMinimalPanel('Pickle Rick Activated!', {
         Iteration: currentIteration,
-        Limit: loopLimit > 0 ? loopLimit : "∞",
-        "Max Time": `${timeLimit}m`,
-        "Worker TO": `${workerTimeout}s`,
-        Promise: promiseToken || "None",
-        Path: fullSessionPath
-    }, "GREEN", "🥒");
+        Limit: loopLimit > 0 ? loopLimit : '∞',
+        'Max Time': `${timeLimit}m`,
+        'Worker TO': `${workerTimeout}s`,
+        Promise: promiseToken || 'None',
+        Path: fullSessionPath,
+    }, 'GREEN', '🥒');
     if (promiseToken) {
         console.log(`
 ${Style.YELLOW}⚠️  STRICT EXIT CONDITION ACTIVE${Style.RESET}`);
@@ -163,8 +167,8 @@ ${Style.YELLOW}⚠️  STRICT EXIT CONDITION ACTIVE${Style.RESET}`);
     }
 }
 function resolvePath(p) {
-    if (p.startsWith("~"))
+    if (p.startsWith('~'))
         return path.join(os.homedir(), p.slice(1));
     return path.resolve(p);
 }
-main().catch(err => die(err.message));
+main().catch((err) => die(err.message));

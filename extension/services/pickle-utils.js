@@ -3,15 +3,15 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 export const Style = {
-    GREEN: "\x1b[32m",
-    RED: "\x1b[31m",
-    BLUE: "\x1b[34m",
-    CYAN: "\x1b[36m",
-    YELLOW: "\x1b[33m",
-    MAGENTA: "\x1b[35m",
-    BOLD: "\x1b[1m",
-    DIM: "\x1b[2m",
-    RESET: "\x1b[0m"
+    GREEN: '\x1b[32m',
+    RED: '\x1b[31m',
+    BLUE: '\x1b[34m',
+    CYAN: '\x1b[36m',
+    YELLOW: '\x1b[33m',
+    MAGENTA: '\x1b[35m',
+    BOLD: '\x1b[1m',
+    DIM: '\x1b[2m',
+    RESET: '\x1b[0m',
 };
 export function getWidth(maxW = 90) {
     const cols = process.stdout.columns || 80;
@@ -41,7 +41,7 @@ export function wrapText(text, width) {
         lines.push(currentLine);
     return lines.length > 0 ? lines : [''];
 }
-export function printMinimalPanel(title, fields, colorName = "GREEN", icon = "🥒") {
+export function printMinimalPanel(title, fields, colorName = 'GREEN', icon = '🥒') {
     const width = getWidth();
     const c = Style[colorName] || Style.GREEN;
     const r = Style.RESET;
@@ -55,18 +55,18 @@ export function printMinimalPanel(title, fields, colorName = "GREEN", icon = "�
         process.stdout.write('\n');
         return;
     }
-    const maxKeyLen = Math.max(...fieldKeys.map(k => k.length)) + 1;
+    const maxKeyLen = Math.max(...fieldKeys.map((k) => k.length)) + 1;
     for (const [key, value] of Object.entries(fields)) {
         const valWidth = width - maxKeyLen - 5;
         const wrappedVal = wrapText(String(value), valWidth);
-        process.stdout.write(`  ${d}${key + ":"}${' '.repeat(maxKeyLen - key.length - 1)}${r} ${wrappedVal[0]}\n`);
+        process.stdout.write(`  ${d}${key + ':'}${' '.repeat(maxKeyLen - key.length - 1)}${r} ${wrappedVal[0]}\n`);
         for (let i = 1; i < wrappedVal.length; i++) {
             process.stdout.write(`  ${' '.repeat(maxKeyLen)} ${wrappedVal[i]}\n`);
         }
     }
     process.stdout.write('\n');
 }
-export function printBanner(text, colorName = "CYAN") {
+export function printBanner(text, colorName = 'CYAN') {
     const c = Style[colorName] || Style.CYAN;
     const r = Style.RESET;
     const b = Style.BOLD;
@@ -87,7 +87,7 @@ export function run_cmd(cmd, options = {}) {
         const stdout = execSync(command, {
             cwd,
             encoding: 'utf-8',
-            stdio: capture ? ['ignore', 'pipe', 'pipe'] : 'inherit'
+            stdio: capture ? ['ignore', 'pipe', 'pipe'] : 'inherit',
         });
         return (stdout || '').trim();
     }
@@ -103,7 +103,7 @@ export async function spawn_cmd(cmd, options = {}) {
         const proc = spawn(cmd[0], cmd.slice(1), {
             cwd: options.cwd,
             stdio: ['inherit', 'pipe', 'pipe'],
-            env: { ...process.env, PYTHONUNBUFFERED: "1" }
+            env: { ...process.env, PYTHONUNBUFFERED: '1' },
         });
         proc.stdout?.on('data', (data) => options.onData?.(data.toString()));
         proc.stderr?.on('data', (data) => options.onData?.(data.toString()));
@@ -118,10 +118,10 @@ export async function spawn_cmd(cmd, options = {}) {
 }
 export function getSessionDir() {
     try {
-        const extensionRoot = path.join(os.homedir(), ".gemini/extensions/pickle-rick");
-        const getSessionScript = path.join(extensionRoot, "extension/get_session.js");
+        const extensionRoot = path.join(os.homedir(), '.gemini/extensions/pickle-rick');
+        const getSessionScript = path.join(extensionRoot, 'extension/get_session.js');
         if (fs.existsSync(getSessionScript)) {
-            const res = run_cmd(["node", getSessionScript], { capture: true, check: false });
+            const res = run_cmd(['node', getSessionScript], { capture: true, check: false });
             return res || null;
         }
     }

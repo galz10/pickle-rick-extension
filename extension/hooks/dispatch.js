@@ -21,7 +21,9 @@ function logError(message) {
         appendFileSync(LOG_PATH, `[${timestamp}] [dispatch_hook] ${message}
 `);
     }
-    catch { /* ignore */ }
+    catch {
+        /* ignore */
+    }
 }
 function allow() {
     console.log(JSON.stringify({ decision: 'allow' }));
@@ -61,7 +63,7 @@ async function main() {
         scriptPath = join(HOOKS_DIR, `${hookName}.ps1`);
         const exe = findExecutable('pwsh') || findExecutable('powershell');
         if (!exe) {
-            logError("PowerShell not found.");
+            logError('PowerShell not found.');
             allow();
             process.exit(0);
         }
@@ -87,12 +89,14 @@ async function main() {
             }
             inputData = Buffer.concat(chunks).toString();
         }
-        catch { /* ignore */ }
+        catch {
+            /* ignore */
+        }
     }
     try {
         const child = spawn(cmd, cmdArgs, {
             env: { ...process.env, EXTENSION_DIR },
-            stdio: ['pipe', 'pipe', 'pipe']
+            stdio: ['pipe', 'pipe', 'pipe'],
         });
         child.stdin?.on('error', (err) => {
             if (err.code === 'EPIPE') {
@@ -113,9 +117,9 @@ async function main() {
         child.stdin?.end();
         let stdout = '';
         let stderr = '';
-        child.stdout?.on('data', data => stdout += data.toString());
-        child.stderr?.on('data', data => stderr += data.toString());
-        child.on('close', code => {
+        child.stdout?.on('data', (data) => (stdout += data.toString()));
+        child.stderr?.on('data', (data) => (stderr += data.toString()));
+        child.on('close', (code) => {
             if (stdout)
                 process.stdout.write(stdout);
             if (stderr)
@@ -128,7 +132,7 @@ async function main() {
             }
             process.exit(code ?? 0);
         });
-        child.on('error', err => {
+        child.on('error', (err) => {
             logError(`Failed to start child process: ${err}`);
             allow();
             process.exit(0);

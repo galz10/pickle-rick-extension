@@ -33,7 +33,7 @@ export function get_github_user() {
 export function get_branch_name(task_id) {
     const user = get_github_user();
     const lowerId = task_id.toLowerCase();
-    const type = ["fix", "bug", "patch", "issue"].some(x => lowerId.includes(x)) ? "fix" : "feat";
+    const type = ['fix', 'bug', 'patch', 'issue'].some((x) => lowerId.includes(x)) ? 'fix' : 'feat';
     return `${user}/${type}/${task_id}`;
 }
 export function update_ticket_status(ticket_id, new_status, session_dir) {
@@ -77,7 +77,7 @@ if (process.argv[1] && path.basename(process.argv[1]).includes('git-utils')) {
         const status = args[idIdx + 1];
         const sessionDir = args[idIdx + 2];
         if (!ticketId || !status || !sessionDir) {
-            console.error("Usage: node git_utils.js --update-status <id> <status> <session_dir>");
+            console.error('Usage: node git_utils.js --update-status <id> <status> <session_dir>');
             process.exit(1);
         }
         try {

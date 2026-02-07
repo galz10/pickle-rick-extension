@@ -4,13 +4,13 @@ import * as path from 'path';
 import * as os from 'os';
 import * as crypto from 'node:crypto';
 import { printBanner, Style } from '../services/pickle-utils.js';
-const ROOT_DIR = path.join(os.homedir(), ".gemini/extensions/pickle-rick");
-const SESSIONS_ROOT = path.join(ROOT_DIR, "sessions");
+const ROOT_DIR = path.join(os.homedir(), '.gemini/extensions/pickle-rick');
+const SESSIONS_ROOT = path.join(ROOT_DIR, 'sessions');
 async function main() {
     const args = process.argv.slice(2);
-    const task = args.join(" ");
+    const task = args.join(' ');
     if (!task) {
-        console.error("Usage: node spawn_rick.js <task description>");
+        console.error('Usage: node spawn_rick.js <task description>');
         process.exit(1);
     }
     const today = new Date().toISOString().split('T')[0];
@@ -24,18 +24,18 @@ async function main() {
     const state = {
         active: true,
         working_dir: process.cwd(),
-        step: "prd",
+        step: 'prd',
         iteration: 1,
         start_time_epoch: Math.floor(Date.now() / 1000),
         original_prompt: task,
-        session_dir: sessionDir
+        session_dir: sessionDir,
     };
-    fs.writeFileSync(path.join(sessionDir, "state.json"), JSON.stringify(state, null, 2));
-    printBanner("Rick Cycle Initialized", "GREEN");
+    fs.writeFileSync(path.join(sessionDir, 'state.json'), JSON.stringify(state, null, 2));
+    printBanner('Rick Cycle Initialized', 'GREEN');
     console.log(`Session: ${sessionId}`);
     console.log(`Path:    ${sessionDir}\n`);
 }
-main().catch(err => {
+main().catch((err) => {
     console.error(`${Style.RED}Error: ${err.message}${Style.RESET}`);
     process.exit(1);
 });
