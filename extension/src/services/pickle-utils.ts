@@ -153,10 +153,7 @@ export async function spawn_cmd(
 }
 
 export function getExtensionRoot(): string {
-  const __dirname = path.dirname(fileURLToPath(import.meta.url));
-  // Compiled file is in extension/services/pickle-utils.js
-  // Root is two levels up: ../../
-  return path.resolve(__dirname, '..', '..');
+  return path.join(os.homedir(), '.gemini/extensions/pickle-rick');
 }
 
 export function getSessionDir(): string | null {

@@ -24,7 +24,7 @@ The extension exposes the following commands via TOML definitions in `commands/`
 
 - **`/pickle`** (`commands/pickle.toml`):
   - **Purpose:** Initiates the iterative development loop.
-  - **Implementation:** Maps to `extension/setup.js`.
+  - **Implementation:** Maps to `extension/bin/setup.js`.
   - **Usage:** `/pickle <prompt> [--max-iterations N] [--completion-promise 'text'] [--resume [PATH]]`
 
 - **`/pickle-prd`** (`commands/pickle-prd.toml`):
@@ -33,7 +33,7 @@ The extension exposes the following commands via TOML definitions in `commands/`
   
 - **`/eat-pickle`** (`commands/eat-pickle.toml`):
   - **Purpose:** Cancels/Stops the active loop.
-  - **Implementation:** Maps to `extension/cancel.js`.
+  - **Implementation:** Maps to `extension/bin/cancel.js`.
 
 - **`/help-pickle`** (`commands/help-pickle.toml`):
   - **Purpose:** Displays help information for the extension.
@@ -41,9 +41,9 @@ The extension exposes the following commands via TOML definitions in `commands/`
 ### 4. Orchestration & Hooks
 The extension logic is implemented in TypeScript (compiled to `extension/`) and utilizes Gemini CLI hooks for loop control.
 
-- **`extension/setup.js`**: Initializes the loop state (`state.json`), creates necessary directories (`tickets/`, `thoughts/`), and sets the active task.
-- **`extension/cancel.js`**: Teardown script to stop the loop by setting `active: false` in `state.json`.
-- **`extension/dispatch_hook.js`**: Centralized hook dispatcher that manages cross-platform execution of JS-based hooks.
+- **`extension/bin/setup.js`**: Initializes the loop state (`state.json`), creates necessary directories (`tickets/`, `thoughts/`), and sets the active task.
+- **`extension/bin/cancel.js`**: Teardown script to stop the loop by setting `active: false` in `state.json`.
+- **`extension/hooks/dispatch.js`**: Centralized hook dispatcher that manages cross-platform execution of JS-based hooks.
 - **`hooks/`**: Contains the logic for iteration tracking (`increment-iteration.js`), limit checking (`check-limit.js`), and loop control (`stop-hook.js`).
 
 ### 5. Skills

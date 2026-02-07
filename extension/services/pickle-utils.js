@@ -1,7 +1,7 @@
 import { execSync, spawn } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
-import { fileURLToPath } from 'node:url';
+import * as os from 'os';
 export const Style = {
     GREEN: '\x1b[32m',
     RED: '\x1b[31m',
@@ -117,10 +117,7 @@ export async function spawn_cmd(cmd, options = {}) {
     });
 }
 export function getExtensionRoot() {
-    const __dirname = path.dirname(fileURLToPath(import.meta.url));
-    // Compiled file is in extension/services/pickle-utils.js
-    // Root is two levels up: ../../
-    return path.resolve(__dirname, '..', '..');
+    return path.join(os.homedir(), '.gemini/extensions/pickle-rick');
 }
 export function getSessionDir() {
     try {

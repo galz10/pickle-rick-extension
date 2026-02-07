@@ -4,9 +4,10 @@ import * as os from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { State } from '../../types/index.js';
 async function main() {
-  const __dirname = path.dirname(fileURLToPath(import.meta.url));
-  const extensionDir = process.env.EXTENSION_DIR || path.resolve(__dirname, '..', '..', '..');
+  const extensionDir =
+    process.env.EXTENSION_DIR || path.join(os.homedir(), '.gemini/extensions/pickle-rick');
   const globalDebugLog = path.join(extensionDir, 'debug.log');
+
   let sessionHooksLog: string | null = null;
 
   const log = (msg: string) => {

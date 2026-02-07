@@ -17,7 +17,7 @@ You **MUST** output a text explanation ("brain dump") *before* every single tool
 **Step 1: Initiation (The Sequential Runner)**
 Execute the Jar Runner script to begin the automated processing of all marinated tasks.
 ```bash
-node "${extensionPath}/extension/jar_runner.js" --date $(date +%Y-%m-%d) $ARGUMENTS
+node "${extensionPath}/extension/bin/jar-runner.js" --date $(date +%Y-%m-%d) $ARGUMENTS
 ```
 **Supported Arguments:**
 - `--pr-approved`: If passed, the runner will automatically push branches and create Pull Requests. If omitted, it will only draft them to `PRD.md` and keep worktrees alive.

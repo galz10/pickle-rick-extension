@@ -3,11 +3,10 @@ import { spawn } from 'node:child_process';
 import { existsSync, appendFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import * as os from 'node:os';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-// dispatch.js is in extension/hooks/, so root is ../../
-const EXTENSION_DIR = resolve(__dirname, '..', '..');
-const HANDLERS_DIR = join(__dirname, 'handlers');
+const EXTENSION_DIR = join(os.homedir(), '.gemini/extensions/pickle-rick');
+const HANDLERS_DIR = join(EXTENSION_DIR, 'extension', 'hooks', 'handlers');
 const LOG_PATH = join(EXTENSION_DIR, 'debug.log');
 
 // Prevent EPIPE errors from crashing the dispatcher when Gemini closes the pipe

@@ -1,9 +1,8 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import * as os from 'node:os';
 async function main() {
-    const __dirname = path.dirname(fileURLToPath(import.meta.url));
-    const extensionDir = process.env.EXTENSION_DIR || path.resolve(__dirname, '..', '..', '..');
+    const extensionDir = process.env.EXTENSION_DIR || path.join(os.homedir(), '.gemini/extensions/pickle-rick');
     const globalDebugLog = path.join(extensionDir, 'debug.log');
     let sessionHooksLog = null;
     const log = (msg) => {
