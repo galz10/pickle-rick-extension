@@ -79,7 +79,8 @@ async function main() {
     // 6. Check Completion Promise
     const responseText = input.prompt_response || '';
     log(`Agent response preview: ${responseText.slice(0, 100).replace(/\n/g, ' ')}...`);
-    const hasPromise = state.completion_promise && responseText.includes(`<promise>${state.completion_promise}</promise>`);
+    const hasPromise = state.completion_promise &&
+        responseText.includes(`<promise>${state.completion_promise}</promise>`);
     // Stop Tokens (Full Exit)
     const isEpicDone = responseText.includes('<promise>EPIC_COMPLETED</promise>');
     const isTaskFinished = responseText.includes('<promise>TASK_COMPLETED</promise>');
@@ -92,20 +93,17 @@ async function main() {
     const isTaskDone = !isWorker && responseText.includes('<promise>TASK_COMPLETE</promise>');
     log(`Promises: hasPromise=${hasPromise}, isEpicDone=${isEpicDone}, isTaskFinished=${isTaskFinished}, isWorkerDone=${isWorkerDone}, isPrdDone=${isPrdDone}, isBreakdownDone=${isBreakdownDone}, isTicketSelected=${isTicketSelected}, isTicketDone=${isTicketDone}, isTaskDone=${isTaskDone}`);
     // EXIT CONDITIONS: Full Exit
-    if (hasPromise || isEpicDone || isTaskFinished) {
-        log(`Decision: ALLOW (Exit condition met)`);
-        state.active = false;
-        fs.writeFileSync(stateFile, JSON.stringify(state, null, 2));
+    if (hasPromise || isEpicDone || isTaskFinished || isWorkerDone) {
+        log(`Decision: ALLOW (Task/Worker complete)`);
+        if (!isWorker) {
+            state.active = false;
+            fs.writeFileSync(stateFile, JSON.stringify(state, null, 2));
+        }
         console.log(JSON.stringify({ decision: 'allow' }));
         return;
     }
     // CONTINUE CONDITIONS: Block exit to force next iteration
-    if (isTaskDone ||
-        isTicketDone ||
-        isWorkerDone ||
-        isBreakdownDone ||
-        isPrdDone ||
-        isTicketSelected) {
+    if (isTaskDone || isTicketDone || isBreakdownDone || isPrdDone || isTicketSelected) {
         log(`Decision: BLOCK (Checkpoint reached)`);
         let feedback = '🥒 **Pickle Rick Loop Active** - ';
         if (isPrdDone)

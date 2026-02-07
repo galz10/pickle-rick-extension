@@ -113,23 +113,18 @@ async function main() {
   );
 
   // EXIT CONDITIONS: Full Exit
-  if (hasPromise || isEpicDone || isTaskFinished) {
-    log(`Decision: ALLOW (Exit condition met)`);
-    state.active = false;
-    fs.writeFileSync(stateFile, JSON.stringify(state, null, 2));
+  if (hasPromise || isEpicDone || isTaskFinished || isWorkerDone) {
+    log(`Decision: ALLOW (Task/Worker complete)`);
+    if (!isWorker) {
+      state.active = false;
+      fs.writeFileSync(stateFile, JSON.stringify(state, null, 2));
+    }
     console.log(JSON.stringify({ decision: 'allow' }));
     return;
   }
 
   // CONTINUE CONDITIONS: Block exit to force next iteration
-  if (
-    isTaskDone ||
-    isTicketDone ||
-    isWorkerDone ||
-    isBreakdownDone ||
-    isPrdDone ||
-    isTicketSelected
-  ) {
+  if (isTaskDone || isTicketDone || isBreakdownDone || isPrdDone || isTicketSelected) {
     log(`Decision: BLOCK (Checkpoint reached)`);
 
     let feedback = '🥒 **Pickle Rick Loop Active** - ';

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import * as fs from 'fs';
 import * as path from 'path';
-import { printMinimalPanel, Style, formatTime, getExtensionRoot } from '../services/pickle-utils.js';
+import { printMinimalPanel, Style, formatTime, getExtensionRoot, } from '../services/pickle-utils.js';
 import { spawn } from 'child_process';
 async function main() {
     const args = process.argv.slice(2);
@@ -75,15 +75,12 @@ async function main() {
         PID: process.pid,
     }, 'CYAN', '🥒');
     const extensionRoot = getExtensionRoot();
-    const includes = [
-        extensionRoot,
-        path.join(extensionRoot, 'sessions'),
-        path.join(extensionRoot, 'jar'),
-        path.join(extensionRoot, 'worktrees'),
-    ];
+    const includes = [extensionRoot, path.join(extensionRoot, 'skills'), ticketPath];
     const cmdArgs = ['-s', '-y'];
     for (const p of includes) {
-        cmdArgs.push('--include-directories', p);
+        if (fs.existsSync(p)) {
+            cmdArgs.push('--include-directories', p);
+        }
     }
     if (outputFormat !== 'text') {
         cmdArgs.push('-o', outputFormat);
@@ -109,7 +106,7 @@ async function main() {
     workerPrompt += `\n\n# TARGET TICKET CONTENT\n${ticketContent || 'N/A'}`;
     workerPrompt += `\n\n# EXECUTION CONTEXT\n- SESSION_ROOT: ${sessionRoot}\n- TICKET_ID: ${ticketId}\n- TICKET_DIR: ${ticketPath}`;
     workerPrompt +=
-        '\n\n**IMPORTANT**: You are a localized worker. Do NOT attempt to solve tickets outside of this provided context.';
+        '\n\n**IMPORTANT**: You are a localized worker. You are FORBIDDEN from working on ANY other tickets. Once you output `<promise>I AM DONE</promise>`, you MUST STOP and let the manager take over.';
     if (workerPrompt.length < 500) {
         workerPrompt +=
             '\n\n1. Activate persona: `activate_skill("load-pickle-persona")`.\n2. Follow \'Rick Loop\' philosophy.\n3. Output: <promise>I AM DONE</promise>';
