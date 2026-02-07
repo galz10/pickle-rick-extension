@@ -3,33 +3,33 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 import * as crypto from 'node:crypto';
-import { printMinimalPanel, Style } from '../services/pickle-utils.js';
-
-const ROOT_DIR = path.join(os.homedir(), '.gemini/extensions/pickle-rick');
-const SESSIONS_ROOT = path.join(ROOT_DIR, 'sessions');
-const JAR_ROOT = path.join(ROOT_DIR, 'jar');
-const WORKTREES_ROOT = path.join(ROOT_DIR, 'worktrees');
-const SESSIONS_MAP = path.join(ROOT_DIR, 'current_sessions.json');
+import { printMinimalPanel, Style, getExtensionRoot } from '../services/pickle-utils.js';
 
 function die(message: string): never {
   console.error(`${Style.RED}❌ Error: ${message}${Style.RESET}`);
   process.exit(1);
 }
 
-function updateSessionMap(cwd: string, sessionPath: string) {
-  let map: Record<string, string> = {};
-  if (fs.existsSync(SESSIONS_MAP)) {
-    try {
-      map = JSON.parse(fs.readFileSync(SESSIONS_MAP, 'utf-8'));
-    } catch {
-      /* ignore */
-    }
-  }
-  map[cwd] = sessionPath;
-  fs.writeFileSync(SESSIONS_MAP, JSON.stringify(map, null, 2));
-}
-
 async function main() {
+  const ROOT_DIR = getExtensionRoot();
+  const SESSIONS_ROOT = path.join(ROOT_DIR, 'sessions');
+  const JAR_ROOT = path.join(ROOT_DIR, 'jar');
+  const WORKTREES_ROOT = path.join(ROOT_DIR, 'worktrees');
+  const SESSIONS_MAP = path.join(ROOT_DIR, 'current_sessions.json');
+
+  const updateSessionMap = (cwd: string, sessionPath: string) => {
+    let map: Record<string, string> = {};
+    if (fs.existsSync(SESSIONS_MAP)) {
+      try {
+        map = JSON.parse(fs.readFileSync(SESSIONS_MAP, 'utf-8'));
+      } catch {
+        /* ignore */
+      }
+    }
+    map[cwd] = sessionPath;
+    fs.writeFileSync(SESSIONS_MAP, JSON.stringify(map, null, 2));
+  };
+
   // Ensure core directories exist
   [SESSIONS_ROOT, JAR_ROOT, WORKTREES_ROOT].forEach((dir) => {
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });

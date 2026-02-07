@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import * as fs from 'fs';
 import * as path from 'path';
-import * as os from 'os';
-const SESSIONS_MAP = path.join(os.homedir(), '.gemini/extensions/pickle-rick/current_sessions.json');
+import { getExtensionRoot } from '../services/pickle-utils.js';
 export function getSessionPath(cwd) {
+    const SESSIONS_MAP = path.join(getExtensionRoot(), 'current_sessions.json');
     if (!fs.existsSync(SESSIONS_MAP)) {
         return null;
     }

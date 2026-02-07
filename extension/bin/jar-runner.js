@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 import * as fs from 'fs';
 import * as path from 'path';
-import * as os from 'os';
-import { spawn_cmd, printBanner, Style } from '../services/pickle-utils.js';
-const ROOT_DIR = path.join(os.homedir(), '.gemini/extensions/pickle-rick');
-const JAR_ROOT = path.join(ROOT_DIR, 'jar');
+import { spawn_cmd, printBanner, Style, getExtensionRoot } from '../services/pickle-utils.js';
 async function main() {
+    const ROOT_DIR = getExtensionRoot();
+    const JAR_ROOT = path.join(ROOT_DIR, 'jar');
     if (!fs.existsSync(JAR_ROOT)) {
         console.log('Pickle Jar is empty. No tasks to run.');
         return;

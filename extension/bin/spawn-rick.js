@@ -1,12 +1,11 @@
 #!/usr/bin/env node
 import * as fs from 'fs';
 import * as path from 'path';
-import * as os from 'os';
 import * as crypto from 'node:crypto';
-import { printBanner, Style } from '../services/pickle-utils.js';
-const ROOT_DIR = path.join(os.homedir(), '.gemini/extensions/pickle-rick');
-const SESSIONS_ROOT = path.join(ROOT_DIR, 'sessions');
+import { printBanner, Style, getExtensionRoot } from '../services/pickle-utils.js';
 async function main() {
+    const ROOT_DIR = getExtensionRoot();
+    const SESSIONS_ROOT = path.join(ROOT_DIR, 'sessions');
     const args = process.argv.slice(2);
     const task = args.join(' ');
     if (!task) {

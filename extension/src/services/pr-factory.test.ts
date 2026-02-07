@@ -6,6 +6,7 @@ import { run_cmd } from './pickle-utils.js';
 vi.mock('node:fs');
 vi.mock('./pickle-utils.js', () => ({
   run_cmd: vi.fn(),
+  getExtensionRoot: vi.fn(() => '/test-root'),
   Style: { GREEN: '', RED: '', RESET: '' },
 }));
 

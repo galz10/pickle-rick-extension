@@ -1,7 +1,7 @@
 import { execSync, spawn } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as os from 'os';
+import { fileURLToPath } from 'node:url';
 export const Style = {
     GREEN: '\x1b[32m',
     RED: '\x1b[31m',
@@ -116,10 +116,16 @@ export async function spawn_cmd(cmd, options = {}) {
         });
     });
 }
+export function getExtensionRoot() {
+    const __dirname = path.dirname(fileURLToPath(import.meta.url));
+    // Compiled file is in extension/services/pickle-utils.js
+    // Root is two levels up: ../../
+    return path.resolve(__dirname, '..', '..');
+}
 export function getSessionDir() {
     try {
-        const extensionRoot = path.join(os.homedir(), '.gemini/extensions/pickle-rick');
-        const getSessionScript = path.join(extensionRoot, 'extension/get_session.js');
+        const extensionRoot = getExtensionRoot();
+        const getSessionScript = path.join(extensionRoot, 'extension/bin/get-session.js');
         if (fs.existsSync(getSessionScript)) {
             const res = run_cmd(['node', getSessionScript], { capture: true, check: false });
             return res || null;

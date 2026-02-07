@@ -5,8 +5,9 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const EXTENSION_DIR = resolve(__dirname, '..');
-const HOOKS_DIR = join(EXTENSION_DIR, 'hooks');
+// dispatch.js is in extension/hooks/, so root is ../../
+const EXTENSION_DIR = resolve(__dirname, '..', '..');
+const HANDLERS_DIR = join(__dirname, 'handlers');
 const LOG_PATH = join(EXTENSION_DIR, 'debug.log');
 
 // Prevent EPIPE errors from crashing the dispatcher when Gemini closes the pipe
@@ -16,18 +17,18 @@ const handleEpipe = (err: any) => {
 process.stdout.on('error', handleEpipe);
 process.stderr.on('error', handleEpipe);
 
-function logError(message: string) {
-  console.error(`Dispatcher Error: ${message}`);
+function log(message: string) {
   try {
     const timestamp = new Date().toISOString();
-    appendFileSync(
-      LOG_PATH,
-      `[${timestamp}] [dispatch_hook] ${message}
-`
-    );
+    appendFileSync(LOG_PATH, `[${timestamp}] [dispatcher] ${message}\n`);
   } catch {
     /* ignore */
   }
+}
+
+function logError(message: string) {
+  console.error(`Dispatcher Error: ${message}`);
+  log(`ERROR: ${message}`);
 }
 
 function allow() {
@@ -48,8 +49,6 @@ function findExecutable(name: string): string | null {
   return null;
 }
 
-const HANDLERS_DIR = join(__dirname, 'handlers');
-
 async function main() {
   const args = process.argv.slice(2);
   if (args.length < 1) {
@@ -58,6 +57,7 @@ async function main() {
   }
 
   const [hookName, ...extraArgs] = args;
+  log(`Dispatching hook: ${hookName} (cwd: ${process.cwd()})`);
   const isWindows = process.platform === 'win32';
 
   let scriptPath: string;
@@ -70,6 +70,7 @@ async function main() {
     cmd = 'node';
     cmdArgs = [scriptPath, ...extraArgs];
   } else if (isWindows) {
+    const HOOKS_DIR = join(EXTENSION_DIR, 'hooks');
     scriptPath = join(HOOKS_DIR, `${hookName}.ps1`);
     const exe = findExecutable('pwsh') || findExecutable('powershell');
     if (!exe) {
@@ -80,6 +81,7 @@ async function main() {
     cmd = exe;
     cmdArgs = ['-ExecutionPolicy', 'Bypass', '-File', scriptPath, ...extraArgs];
   } else {
+    const HOOKS_DIR = join(EXTENSION_DIR, 'hooks');
     scriptPath = join(HOOKS_DIR, `${hookName}.sh`);
     cmd = 'bash';
     cmdArgs = [scriptPath, ...extraArgs];
@@ -99,8 +101,9 @@ async function main() {
         chunks.push(chunk);
       }
       inputData = Buffer.concat(chunks).toString();
-    } catch {
-      /* ignore */
+      log(`Input Data: ${inputData}`);
+    } catch (e) {
+      log(`Error reading stdin: ${e}`);
     }
   }
 

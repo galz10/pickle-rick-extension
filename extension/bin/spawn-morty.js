@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 import * as fs from 'fs';
 import * as path from 'path';
-import * as os from 'os';
-import { printMinimalPanel, Style, formatTime } from '../services/pickle-utils.js';
+import { printMinimalPanel, Style, formatTime, getExtensionRoot } from '../services/pickle-utils.js';
 import { spawn } from 'child_process';
 async function main() {
     const args = process.argv.slice(2);
@@ -75,7 +74,7 @@ async function main() {
         Timeout: `${effectiveTimeout}s (Req: ${timeout}s)`,
         PID: process.pid,
     }, 'CYAN', '🥒');
-    const extensionRoot = path.join(os.homedir(), '.gemini/extensions/pickle-rick');
+    const extensionRoot = getExtensionRoot();
     const includes = [
         extensionRoot,
         path.join(extensionRoot, 'sessions'),

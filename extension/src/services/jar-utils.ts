@@ -2,7 +2,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-import { run_cmd, Style } from './pickle-utils.js';
+import { run_cmd, Style, getExtensionRoot } from './pickle-utils.js';
 
 function getBranch(repoPath: string): string {
   try {
@@ -37,7 +37,7 @@ export function addToJar(sessionDir: string): string {
   // 3. Setup Jar storage
   const today = new Date().toISOString().split('T')[0];
   const sessionId = path.basename(sessionDir);
-  const jarRoot = path.join(os.homedir(), '.gemini/extensions/pickle-rick/jar');
+  const jarRoot = path.join(getExtensionRoot(), 'jar');
   const taskDir = path.join(jarRoot, today, sessionId);
   fs.mkdirSync(taskDir, { recursive: true });
 

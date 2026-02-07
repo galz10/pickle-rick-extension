@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 import * as fs from 'fs';
 import * as path from 'path';
-import * as os from 'os';
-import { run_cmd, Style } from './pickle-utils.js';
+import { run_cmd, Style, getExtensionRoot } from './pickle-utils.js';
 function getBranch(repoPath) {
     try {
         return run_cmd(['git', 'rev-parse', '--abbrev-ref', 'HEAD'], {
@@ -34,7 +33,7 @@ export function addToJar(sessionDir) {
     // 3. Setup Jar storage
     const today = new Date().toISOString().split('T')[0];
     const sessionId = path.basename(sessionDir);
-    const jarRoot = path.join(os.homedir(), '.gemini/extensions/pickle-rick/jar');
+    const jarRoot = path.join(getExtensionRoot(), 'jar');
     const taskDir = path.join(jarRoot, today, sessionId);
     fs.mkdirSync(taskDir, { recursive: true });
     // 4. Copy PRD

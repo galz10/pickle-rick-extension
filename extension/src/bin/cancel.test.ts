@@ -5,6 +5,7 @@ import { cancelSession } from './cancel.js';
 vi.mock('node:fs');
 vi.mock('../services/pickle-utils.js', () => ({
   printMinimalPanel: vi.fn(),
+  getExtensionRoot: vi.fn(() => '/test-root'),
 }));
 
 describe('cancel', () => {

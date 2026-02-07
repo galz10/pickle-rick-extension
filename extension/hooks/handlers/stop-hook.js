@@ -1,8 +1,10 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as os from 'node:os';
+import { fileURLToPath } from 'node:url';
 async function main() {
-    const extensionDir = process.env.EXTENSION_DIR || path.join(os.homedir(), '.gemini/extensions/pickle-rick');
+    const __dirname = path.dirname(fileURLToPath(import.meta.url));
+    const extensionDir = process.env.EXTENSION_DIR || path.resolve(__dirname, '..', '..', '..');
     const globalDebugLog = path.join(extensionDir, 'debug.log');
     let sessionHooksLog = null;
     const log = (msg) => {
@@ -34,24 +36,28 @@ async function main() {
         return;
     }
     const input = JSON.parse(inputData || '{}');
+    log(`Processing AfterAgent hook. Input size: ${inputData.length}`);
     // 2. Determine State File
     let stateFile = process.env.PICKLE_STATE_FILE;
     if (!stateFile) {
         const sessionsMapPath = path.join(extensionDir, 'current_sessions.json');
+        log(`Checking sessions map at: ${sessionsMapPath}`);
         if (fs.existsSync(sessionsMapPath)) {
             const map = JSON.parse(fs.readFileSync(sessionsMapPath, 'utf8'));
             const sessionPath = map[process.cwd()];
+            log(`Found session path for ${process.cwd()}: ${sessionPath}`);
             if (sessionPath)
                 stateFile = path.join(sessionPath, 'state.json');
         }
     }
     if (!stateFile || !fs.existsSync(stateFile)) {
-        log('No state file found');
+        log(`No state file found. (stateFile: ${stateFile})`);
         console.log(JSON.stringify({ decision: 'allow' }));
         return;
     }
     // Initialize session-specific hook log
     sessionHooksLog = path.join(path.dirname(stateFile), 'hooks.log');
+    log(`State file found: ${stateFile}`);
     // 3. Read State
     const state = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
     // 4. Check Context
@@ -72,35 +78,46 @@ async function main() {
     }
     // 6. Check Completion Promise
     const responseText = input.prompt_response || '';
-    const hasPromise = state.completion_promise &&
-        responseText.includes(`<promise>${state.completion_promise}</promise>`);
+    log(`Agent response preview: ${responseText.slice(0, 100).replace(/\n/g, ' ')}...`);
+    const hasPromise = state.completion_promise && responseText.includes(`<promise>${state.completion_promise}</promise>`);
     // Stop Tokens (Full Exit)
     const isEpicDone = responseText.includes('<promise>EPIC_COMPLETED</promise>');
     const isTaskFinished = responseText.includes('<promise>TASK_COMPLETED</promise>');
     // Continue Tokens (Checkpoint)
     const isWorkerDone = isWorker && responseText.includes('<promise>I AM DONE</promise>');
+    const isPrdDone = !isWorker && responseText.includes('<promise>PRD_COMPLETE</promise>');
+    const isBreakdownDone = !isWorker && responseText.includes('<promise>BREAKDOWN_COMPLETE</promise>');
+    const isTicketSelected = !isWorker && responseText.includes('<promise>TICKET_SELECTED</promise>');
     const isTicketDone = !isWorker && responseText.includes('<promise>TICKET_COMPLETE</promise>');
     const isTaskDone = !isWorker && responseText.includes('<promise>TASK_COMPLETE</promise>');
-    const isBreakdownDone = !isWorker && responseText.includes('<promise>BREAKDOWN_COMPLETE</promise>');
-    log(`Promises: hasPromise=${hasPromise}, isEpicDone=${isEpicDone}, isTaskFinished=${isTaskFinished}, isWorkerDone=${isWorkerDone}, isTicketDone=${isTicketDone}, isTaskDone=${isTaskDone}, isBreakdownDone=${isBreakdownDone}`);
+    log(`Promises: hasPromise=${hasPromise}, isEpicDone=${isEpicDone}, isTaskFinished=${isTaskFinished}, isWorkerDone=${isWorkerDone}, isPrdDone=${isPrdDone}, isBreakdownDone=${isBreakdownDone}, isTicketSelected=${isTicketSelected}, isTicketDone=${isTicketDone}, isTaskDone=${isTaskDone}`);
     // EXIT CONDITIONS: Full Exit
     if (hasPromise || isEpicDone || isTaskFinished) {
-        log(`Decision: ALLOW (Epic/Task complete)`);
+        log(`Decision: ALLOW (Exit condition met)`);
         state.active = false;
         fs.writeFileSync(stateFile, JSON.stringify(state, null, 2));
         console.log(JSON.stringify({ decision: 'allow' }));
         return;
     }
     // CONTINUE CONDITIONS: Block exit to force next iteration
-    if (isTaskDone || isTicketDone || isWorkerDone || isBreakdownDone) {
-        log(`Decision: BLOCK (Checkpoint reached, continuing loop)`);
+    if (isTaskDone ||
+        isTicketDone ||
+        isWorkerDone ||
+        isBreakdownDone ||
+        isPrdDone ||
+        isTicketSelected) {
+        log(`Decision: BLOCK (Checkpoint reached)`);
         let feedback = '🥒 **Pickle Rick Loop Active** - ';
+        if (isPrdDone)
+            feedback += 'PRD finished, moving to breakdown...';
+        if (isBreakdownDone)
+            feedback += 'Breakdown finished, moving to implementation...';
+        if (isTicketSelected)
+            feedback += 'Ticket selected, starting research...';
         if (isTaskDone || isTicketDone)
             feedback += 'Ticket finished, moving to next...';
         if (isWorkerDone)
             feedback += 'Worker finished, Rick is validating...';
-        if (isBreakdownDone)
-            feedback += 'Breakdown finished, moving to implementation...';
         console.log(JSON.stringify({
             decision: 'block',
             systemMessage: feedback,
