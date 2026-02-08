@@ -53,14 +53,14 @@ You can watch Pickle Rick's "thoughts" in real-time, but to see the *real* codin
 
 **Watch the Manager (Rick):**
 ```bash
-SESSION_DIR=$(node ~/.gemini/extensions/pickle-rick/extension/get_session.js)
+SESSION_DIR=$(node ${EXTENSION_ROOT}/extension/bin/get_session.js)
 tail -f "$SESSION_DIR/state.json"
 ```
 
 **Watch the Worker (Morty):**
 ```bash
 # Find and tail the latest worker log in your session
-ls -t ~/.gemini/extensions/pickle-rick/sessions/*/*/*/worker_session_*.log | head -n 1 | xargs tail -f
+ls -t ${EXTENSION_ROOT}/sessions/*/*/*/worker_session_*.log | head -n 1 | xargs tail -f
 ```
 
 ### 2. Advanced Flags
@@ -78,7 +78,7 @@ Pickle Rick has native support for resuming sessions. This is useful if a loop w
 ```
 You can also resume a specific session by providing the path:
 ```bash
-/pickle --resume ~/.gemini/extensions/pickle-rick/sessions/YYYY-MM-DD-slug
+/pickle --resume ${EXTENSION_ROOT}/sessions/YYYY-MM-DD-slug
 ```
 
 ## 🚀 God Mode Best Practices

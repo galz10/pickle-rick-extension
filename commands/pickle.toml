@@ -21,6 +21,9 @@ Run the setup script to initialize the loop state:
 ```bash
 node "${extensionPath}/extension/bin/setup.js" $ARGUMENTS
 ```
+
+**CRITICAL**: Note the **Extension Path** above (`${extensionPath}`). In all subsequent steps and skills, you must use this path (hereafter referred to as `${EXTENSION_ROOT}`) when executing scripts from the extension's `extension/bin/` directory. Do NOT use hardcoded paths like `~/.gemini/...`.
+
 **Windows (PowerShell):**
 ```powershell
 node "${extensionPath}/extension/bin/setup.js" $ARGUMENTS

@@ -87,11 +87,17 @@ async function main() {
         else if (arg === '--paused') {
             pausedMode = true;
         }
+        else if (arg === '-s' || arg === '--session-id') {
+            // Ignore session-id flag if passed by gemini, but consume the next arg if it's not a flag
+            if (args[i + 1] && !args[i + 1].startsWith('-')) {
+                i++;
+            }
+        }
         else {
             taskArgs.push(arg);
         }
     }
-    const taskStr = taskArgs.join(' ');
+    const taskStr = taskArgs.join(' ').trim();
     let fullSessionPath = '';
     let currentIteration = 1;
     if (resumeMode) {
@@ -157,6 +163,7 @@ async function main() {
         'Max Time': `${timeLimit}m`,
         'Worker TO': `${workerTimeout}s`,
         Promise: promiseToken || 'None',
+        Extension: ROOT_DIR,
         Path: fullSessionPath,
     }, 'GREEN', '🥒');
     if (promiseToken) {
