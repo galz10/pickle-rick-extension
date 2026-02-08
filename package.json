@@ -1,0 +1,32 @@
+{
+  "name": "pickle-rick-extension",
+  "version": "1.0.0",
+  "description": "```bash gemini extensions install https://github.com/galz10/pickle-rick-extension ```",
+  "main": "index.js",
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "extension/src/**/*.ts": [
+      "npm --prefix extension run lint:fix",
+      "npm --prefix extension run format"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/galz10/pickle-rick-extension.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/galz10/pickle-rick-extension/issues"
+  },
+  "homepage": "https://github.com/galz10/pickle-rick-extension#readme"
+}

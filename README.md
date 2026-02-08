@@ -10,7 +10,7 @@ gemini extensions install https://github.com/galz10/pickle-rick-extension
 
 - **Gemini CLI**: Version `> 0.25.0-preview.0`
 - **Agent Skills & Hooks**: Must be enabled in your Gemini configuration.
-- **Python 3.x**: Required for worker orchestration and management.
+- **Node.js**: Required for orchestration and hooks.
 
 > [!WARNING]
 > **USE AT YOUR OWN RISK.** This is a fun side project and experimental demonstration. It involves autonomous code modification and shell execution. While safety guardrails are in place, the agent may behave unexpectedly and consume a significant number of tokens.
@@ -56,7 +56,7 @@ This plugin implements the loop using a **AfterAgent hook** that intercepts Gemi
 # 5. Repeat until completion
 ```
 
-The loop happens inside your current session - you don't need external bash loops. The AfterAgent hook in `hooks/stop-hook.sh` creates the self-referential feedback loop by blocking normal session exit.
+The loop happens inside your current session - you don't need external bash loops. The AfterAgent hook in `hooks/stop-hook.js` creates the self-referential feedback loop by blocking normal session exit.
 
 This creates a self-referential feedback loop where:
 - The prompt never changes between iterations (ensuring focus).
@@ -90,8 +90,8 @@ To initiate the iterative development loop:
 ```
 
 **Options:**
-- `--max-iterations <N>`: Stop after N iterations (default: 5). **(Currently non-functional)**
-- `--max-time <M>`: Stop after M minutes (default: 60). (Worker timeout default: 20m). **(Currently non-functional)**
+- `--max-iterations <N>`: Stop after N iterations (default: 5).
+- `--max-time <M>`: Stop after M minutes (default: 60). (Worker timeout default: 20m).
 - `--worker-timeout <S>`: Timeout for individual workers in seconds (default: 1200).
 - `--name <SLUG>`: Custom name for the session directory.
 - `--completion-promise "TEXT"`: Only stop when the agent outputs `<promise>TEXT</promise>`.
@@ -181,9 +181,9 @@ This extension provides specialized "Skills" that the agent activates during dif
 
 - **`.github/`**: GitHub Actions workflows for CI/CD and releases.
 - **`commands/`**: TOML definitions for all extension commands (e.g., `/pickle`, `/eat-pickle`, `/pickle-prd`).
-- **`hooks/`**: Bash hooks that manage the iterative loop and persona reinforcement.
+- **`hooks/`**: JavaScript hooks that manage the iterative loop and persona reinforcement.
 - **`resources/`**: Static assets like icons and images.
-- **`scripts/`**: Logic for session management, worker orchestration, and setup.
+- **`extension/`**: Logic for session management, worker orchestration, and hooks (compiled from TypeScript).
 - **`skills/`**: Detailed instructions for each specialized engineering skill.
 - **`gemini-extension.json`**: The extension's manifest file.
 - **`GEMINI.md`**: Global context file loaded by the extension.
