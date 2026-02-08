@@ -68,7 +68,7 @@ if (process.argv[1] && path.basename(process.argv[1]).startsWith('jar-utils')) {
   const args = process.argv.slice(2);
   const sessionIndex = args.indexOf('--session');
   if (sessionIndex === -1) {
-    console.log('Usage: node jar_utils.js add --session <path>');
+    console.log('Usage: node jar-utils.js add --session <path>');
     process.exit(1);
   }
   const sessionDir = args[sessionIndex + 1];

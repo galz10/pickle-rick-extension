@@ -21,7 +21,7 @@ export function getSessionPath(cwd: string): string | null {
   return sessionPath;
 }
 
-if (process.argv[1] && path.basename(process.argv[1]).startsWith('get_session')) {
+if (process.argv[1] && path.basename(process.argv[1]).startsWith('get-session')) {
   const sessionPath = getSessionPath(process.cwd());
   if (sessionPath) {
     process.stdout.write(sessionPath);

@@ -9,7 +9,7 @@ async function main() {
     const args = process.argv.slice(2);
     const task = args.join(' ');
     if (!task) {
-        console.error('Usage: node spawn_rick.js <task description>');
+        console.error('Usage: node spawn-rick.js <task description>');
         process.exit(1);
     }
     const today = new Date().toISOString().split('T')[0];

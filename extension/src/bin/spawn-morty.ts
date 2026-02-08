@@ -14,7 +14,7 @@ async function main() {
   const args = process.argv.slice(2);
   if (args.length < 1) {
     console.log(
-      'Usage: node spawn_morty.js <task> --ticket-id <id> --ticket-path <path> [--timeout <sec>] [--output-format <fmt>]'
+      'Usage: node spawn-morty.js <task> --ticket-id <id> --ticket-path <path> [--timeout <sec>] [--output-format <fmt>]'
     );
     process.exit(1);
   }

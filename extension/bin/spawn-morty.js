@@ -6,7 +6,7 @@ import { spawn } from 'child_process';
 async function main() {
     const args = process.argv.slice(2);
     if (args.length < 1) {
-        console.log('Usage: node spawn_morty.js <task> --ticket-id <id> --ticket-path <path> [--timeout <sec>] [--output-format <fmt>]');
+        console.log('Usage: node spawn-morty.js <task> --ticket-id <id> --ticket-path <path> [--timeout <sec>] [--output-format <fmt>]');
         process.exit(1);
     }
     const task = args[0];

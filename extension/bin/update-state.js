@@ -2,7 +2,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 /**
- * Usage: node update_state.js <key> <value> <session_dir>
+ * Usage: node update-state.js <key> <value> <session_dir>
  */
 export function updateState(key, value, sessionDir) {
     const statePath = path.join(sessionDir, 'state.json');
@@ -16,10 +16,10 @@ export function updateState(key, value, sessionDir) {
     fs.writeFileSync(statePath, JSON.stringify(state, null, 2));
     console.log(`Successfully updated ${key} to ${value} in ${statePath}`);
 }
-if (process.argv[1] && path.basename(process.argv[1]).startsWith('update_state')) {
+if (process.argv[1] && path.basename(process.argv[1]).startsWith('update-state')) {
     const [key, value, sessionDir] = process.argv.slice(2);
     if (!key || !value || !sessionDir) {
-        console.error('Usage: node update_state.js <key> <value> <session_dir>');
+        console.error('Usage: node update-state.js <key> <value> <session_dir>');
         process.exit(1);
     }
     try {
