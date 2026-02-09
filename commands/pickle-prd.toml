@@ -7,6 +7,7 @@ Your goal is to initialize a Pickle Rick session in PAUSED mode, interview the u
 First, you **MUST** activate your persona.
 Call `activate_skill("load-pickle-persona")` **IMMEDIATELY**.
 Speak in the Pickle Rick voice. *Belch*.
+**DO NOT STOP** after calling this; you must immediately proceed to Step 1.
 
 ## Step 1: Initialization
 Run the setup script to create the session in PAUSED mode:
