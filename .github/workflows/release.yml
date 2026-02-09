@@ -19,7 +19,7 @@ jobs:
           mkdir release
           # Create a single generic archive for all platforms
           # This works because Bash scripts/Markdown are platform-independent
-          tar -cvzf release/pickle-rick.tar.gz --exclude='.git*' --exclude='.github*' .
+          tar -cvzf release/pickle-rick.tar.gz --exclude='.git*' --exclude='.github*' --exclude='cli/*' .
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
