@@ -8,11 +8,12 @@ gemini extensions install https://github.com/galz10/pickle-rick-extension
 ```
 
 **Step 2: Update Settings**
+Make sure both hooks and skills are enabled on Gemini CLI 
+<img width="563" height="434" alt="image" src="https://github.com/user-attachments/assets/266ef79f-80cf-43fb-839b-6454dbc85afd" />
+
 Add this to your `~/.gemini/settings.json` to enable the agent and secure git operations:
 ```json
 {
-  "hooks": { "enabled": true },
-  "experimental": { "skills": true },
   "context": {
     "includeDirectories": ["~/.gemini/extensions/pickle-rick"]
   },
