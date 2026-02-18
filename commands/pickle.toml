@@ -70,6 +70,10 @@ Between each step, you **MUST** explicitly state what you are doing (e.g., "Movi
         2. `git status` & `git diff` (Verify implementation matches the plan)
         3. Run tests/build (Check functionality)
     *   **Cleanup**: If validation fails, REVERT changes (`git reset --hard`). If it passes, COMMIT changes.
+    *   **Quota Errors**:
+        * If the worker reports `QUOTA EXHAUSTED`, you MUST ask the user: "You have exceeded your quota on the current model, do you want to spawn Morty using a different model?".
+        * If they provide a model, retry the `spawn_morty.py` command with the `--model <model_name>` flag.
+        * If they say no, stop the loop.
     *   **Next Ticket**: Pick the next ticket and repeat.
     *   **FORBIDDEN**: You are strictly FORBIDDEN from deactivating the loop or declaring "Epic Done" if any tickets are still `Todo` or missing lifecycle documentation.
 

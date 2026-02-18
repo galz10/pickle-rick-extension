@@ -237,6 +237,10 @@ To prevent the agent from accidentally pushing code or performing destructive gi
 }
 ```
 
+### Policy Restrictions
+
+If you receive an error regarding policy restrictions when Pickle Rick is spawning the Morty workers, refer to [policy configuration](./docs/policies.md)
+
 ## ⚖️ Legal Disclaimer
 
 **Pickle Rick is a fictional character.** This extension employs a creative, cynical, and arrogant persona inspired by the show *Rick and Morty* for the purpose of demonstrating advanced agentic workflows and "God Mode" engineering principles. 
