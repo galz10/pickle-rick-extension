@@ -3,7 +3,12 @@ import { spawn } from 'node:child_process';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
-import { formatTime, getExtensionRoot, printMinimalPanel, Style } from '../services/pickle-utils.js';
+import {
+  formatTime,
+  getExtensionRoot,
+  printMinimalPanel,
+  Style,
+} from '../services/pickle-utils.js';
 
 type OutputFormat = 'text' | 'json' | 'stream-json';
 
@@ -264,7 +269,10 @@ async function main() {
     cmdArgs.push('--model', parsed.model);
   }
 
-  let workerPrompt = extractMortyPromptBase(extensionRoot).replace(/\${extensionPath}/g, extensionRoot);
+  let workerPrompt = extractMortyPromptBase(extensionRoot).replace(
+    /\${extensionPath}/g,
+    extensionRoot
+  );
   workerPrompt = workerPrompt.replace(/\$ARGUMENTS/g, parsed.task);
 
   const ticketContent = readTicketContent(parsed.ticketFile);
@@ -322,6 +330,17 @@ async function main() {
     const output = fs.existsSync(sessionLog) ? fs.readFileSync(sessionLog, 'utf8') : '';
     const hasDonePromise = output.includes('<promise>I AM DONE</promise>');
     const quotaExhausted = detectQuotaExhausted(output);
+
+    // Performance Optimization: Context Window Compression
+    // Truncate massive logs to prevent blowing up the Manager's context window.
+    if (output.length > 50000) {
+      const truncatedOutput =
+        output.substring(0, 25000) +
+        `\n\n... [LOG TRUNCATED FOR CONTEXT COMPRESSION: ${output.length - 50000} bytes removed] ...\n\n` +
+        output.substring(output.length - 25000);
+      fs.writeFileSync(sessionLog, truncatedOutput, 'utf8');
+      console.log(`${Style.YELLOW}⚠️  Worker log compressed to save context window.${Style.RESET}`);
+    }
 
     let exitCode = 0;
     let validation = 'successful';

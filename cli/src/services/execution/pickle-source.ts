@@ -17,28 +17,33 @@ export class PickleTaskSource implements TaskSource {
     }
 
     async getNextTask(): Promise<Task | null> {
+        const tasks = await this.getParallelizableTasks(1);
+        return tasks.length > 0 ? tasks[0] : null;
+    }
+
+    async getParallelizableTasks(limit = 1): Promise<Task[]> {
         const state = await this.getState();
 
         // 1. PRD Phase
         if (state.step === "prd") {
-            return {
+            return [{
                 id: "phase-prd",
                 title: "Draft PRD",
                 body: state.original_prompt,
                 completed: false,
                 metadata: { type: "phase", phase: "prd" }
-            };
+            }];
         }
 
         // 2. Breakdown Phase
         if (state.step === "breakdown") {
-             return {
+             return [{
                 id: "phase-breakdown",
                 title: "Breakdown Tickets",
                 body: "Break down the PRD into atomic Linear tickets in the session directory.",
                 completed: false,
                 metadata: { type: "phase", phase: "breakdown" }
-            };
+            }];
         }
 
         // 3. Ticket Loop
@@ -46,22 +51,37 @@ export class PickleTaskSource implements TaskSource {
         if (state.current_ticket) {
              const ticket = await this.getTask(state.current_ticket);
              if (ticket && !ticket.completed) {
-                 return ticket;
+                 return [ticket];
              }
-             // If completed (should have been marked), or invalid, fall through to find next
         }
 
-        // Find next available ticket
-        const nextTicket = await this.findNextTicket(state.session_dir);
-        if (nextTicket) {
-            // Update state to lock onto this ticket
-            state.current_ticket = nextTicket.id;
-            state.step = "research"; // Reset loop phase
-            await this.saveState(state);
-            return nextTicket;
-        }
-
-        return null; // No more work
+        // Find next available tickets (Parallelization logic)
+         const allTickets: Task[] = [];
+         await this.scanTickets(state.session_dir, allTickets);
+         
+         const implementable = allTickets.filter(t => {
+             const isParentId = t.id === "parent" || t.id === "linear_ticket_parent" || t.id === "task_priority_parent";
+             const isEpicTitle = t.title.toLowerCase().includes("[epic]");
+             return !isParentId && !isEpicTitle && !t.completed;
+         });
+         
+         implementable.sort((a, b) => {
+             const orderA = a.metadata?.order ?? Infinity;
+             const orderB = b.metadata?.order ?? Infinity;
+             if (orderA !== orderB) return orderA - orderB;
+             const timeA = a.metadata?.birthtime ?? 0;
+             const timeB = b.metadata?.birthtime ?? 0;
+             return timeA - timeB;
+         });
+         
+         const tasksToRun = implementable.slice(0, limit);
+         if (tasksToRun.length > 0 && limit === 1) {
+             state.current_ticket = tasksToRun[0].id;
+             state.step = "research"; // Reset loop phase
+             await this.saveState(state);
+         }
+         
+         return tasksToRun;
     }
 
     async getTask(id: string): Promise<Task | null> {
